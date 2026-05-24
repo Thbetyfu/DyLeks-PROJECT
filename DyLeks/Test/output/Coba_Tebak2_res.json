@@ -1,0 +1,141 @@
+{
+    "input_path": "input\\Coba_Tebak2.png",
+    "page_index": null,
+    "page_count": null,
+    "width": 225,
+    "height": 225,
+    "model_settings": {
+        "use_doc_preprocessor": true,
+        "use_seal_recognition": false,
+        "use_table_recognition": true,
+        "use_formula_recognition": true,
+        "use_chart_recognition": false,
+        "use_region_detection": true,
+        "format_block_content": false,
+        "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+        ]
+    },
+    "parsing_res_list": [
+        {
+            "block_label": "image",
+            "block_content": "B ",
+            "block_bbox": [
+                0,
+                0,
+                225,
+                224
+            ],
+            "block_id": 0,
+            "block_order": null
+        }
+    ],
+    "doc_preprocessor_res": {
+        "input_path": null,
+        "page_index": null,
+        "model_settings": {
+            "use_doc_orientation_classify": false,
+            "use_doc_unwarping": false
+        },
+        "angle": -1
+    },
+    "layout_det_res": {
+        "input_path": null,
+        "page_index": null,
+        "boxes": [
+            {
+                "cls_id": 1,
+                "label": "image",
+                "score": 0.7753679752349854,
+                "coordinate": [
+                    0.21694183349609375,
+                    0.096649169921875,
+                    225,
+                    224.9102783203125
+                ]
+            }
+        ]
+    },
+    "overall_ocr_res": {
+        "input_path": null,
+        "page_index": null,
+        "model_settings": {
+            "use_doc_preprocessor": false,
+            "use_textline_orientation": true
+        },
+        "dt_polys": [
+            [
+                [
+                    59,
+                    48
+                ],
+                [
+                    169,
+                    48
+                ],
+                [
+                    169,
+                    181
+                ],
+                [
+                    59,
+                    181
+                ]
+            ]
+        ],
+        "text_det_params": {
+            "limit_side_len": 736,
+            "limit_type": "min",
+            "thresh": 0.3,
+            "max_side_limit": 4000,
+            "box_thresh": 0.6,
+            "unclip_ratio": 1.5
+        },
+        "text_type": "general",
+        "textline_orientation_angles": [
+            0
+        ],
+        "text_rec_score_thresh": 0.0,
+        "return_word_box": false,
+        "rec_texts": [
+            "B"
+        ],
+        "rec_scores": [
+            0.9969270825386047
+        ],
+        "rec_polys": [
+            [
+                [
+                    59,
+                    48
+                ],
+                [
+                    169,
+                    48
+                ],
+                [
+                    169,
+                    181
+                ],
+                [
+                    59,
+                    181
+                ]
+            ]
+        ],
+        "rec_boxes": [
+            [
+                59,
+                48,
+                169,
+                181
+            ]
+        ]
+    }
+}

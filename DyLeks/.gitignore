@@ -1,0 +1,75 @@
+# System / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.log
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+build/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+FE/node_modules/
+FE/.next/
+FE/out/
+FE/dist/
+FE/.vercel/
+FE/.turbo/
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+.venv/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+BE/__pycache__/
+BE/.pytest_cache/
+BE/htmlcov/
+BE/.env
+
+# ML / Data
+ML_Pipeline/data/
+ML_Pipeline/artifacts/
+ML_Pipeline/models/*.pth
+ML_Pipeline/models/*.onnx
+ML_Pipeline/models/*.pkl
+*.onnx
+*.pt
+*.h5
+ML_Pipeline/.ipynb_checkpoints/
+.ipynb_checkpoints/
+
+# Infrastructure
+.terraform/

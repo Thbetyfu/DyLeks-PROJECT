@@ -1,0 +1,226 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.header {
+  width: 100%;
+  padding: 40px 40px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.headerTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333333;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: #f0edf7;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: #6F45BA;
+  border-radius: 100px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.content {
+  width: 100%;
+  padding: 100px 40px 30px 40px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.duck {
+  width: 55px;
+  height: auto;
+}
+
+.title {
+  color: #6F45BA;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.centerAction {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 20px;
+}
+
+.listenCard {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  background: #7d57c1;
+  border-radius: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  box-shadow: 0 15px 35px rgba(111, 69, 186, 0.25);
+  transition: all 0.3s ease;
+}
+
+.listenCard:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.listenCardPlaying {
+  background: #e0e0e0;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.listenIcon {
+  width: 80px;
+  height: auto;
+  transition: all 0.3s ease;
+}
+
+.listenText {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.subTitle {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 600;
+  text-align: center;
+}
+
+.bottomContainer {
+  width: 100%;
+  padding: 40px 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.continueButton {
+  width: 100%;
+  max-width: 400px;
+  background: #6F45BA;
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 20px;
+  padding: 18px 0;
+  box-shadow: 0 6px 0 #4a2e7c;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.continueButton:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #4a2e7c;
+}
+
+.continueButtonDisabled {
+  background: #f0f0f0 !important;
+  color: #bcbcbc !important;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.cameraContainer {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 3 / 4;
+  background: #000;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.videoFeed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cameraButton {
+  width: 85%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 14px 0;
+  border-radius: 14px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(111, 69, 186, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: white;
+  font-weight: 700;
+  z-index: 20;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

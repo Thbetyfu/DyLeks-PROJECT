@@ -1,0 +1,129 @@
+{
+    "input_path": "input\\Coba_Tebak4.jpeg",
+    "page_index": null,
+    "page_count": null,
+    "width": 1200,
+    "height": 1600,
+    "model_settings": {
+        "use_doc_preprocessor": true,
+        "use_seal_recognition": false,
+        "use_table_recognition": true,
+        "use_formula_recognition": true,
+        "use_chart_recognition": false,
+        "use_region_detection": true,
+        "format_block_content": false,
+        "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+        ]
+    },
+    "parsing_res_list": [
+        {
+            "block_label": "text",
+            "block_content": "「T ",
+            "block_bbox": [
+                227,
+                740,
+                763,
+                1006
+            ],
+            "block_id": 0,
+            "block_order": 1
+        }
+    ],
+    "doc_preprocessor_res": {
+        "input_path": null,
+        "page_index": null,
+        "model_settings": {
+            "use_doc_orientation_classify": false,
+            "use_doc_unwarping": false
+        },
+        "angle": -1
+    },
+    "layout_det_res": {
+        "input_path": null,
+        "page_index": null,
+        "boxes": []
+    },
+    "overall_ocr_res": {
+        "input_path": null,
+        "page_index": null,
+        "model_settings": {
+            "use_doc_preprocessor": false,
+            "use_textline_orientation": true
+        },
+        "dt_polys": [
+            [
+                [
+                    231,
+                    740
+                ],
+                [
+                    763,
+                    749
+                ],
+                [
+                    759,
+                    1006
+                ],
+                [
+                    227,
+                    997
+                ]
+            ]
+        ],
+        "text_det_params": {
+            "limit_side_len": 736,
+            "limit_type": "min",
+            "thresh": 0.3,
+            "max_side_limit": 4000,
+            "box_thresh": 0.6,
+            "unclip_ratio": 1.5
+        },
+        "text_type": "general",
+        "textline_orientation_angles": [
+            0
+        ],
+        "text_rec_score_thresh": 0.0,
+        "return_word_box": false,
+        "rec_texts": [
+            "「T"
+        ],
+        "rec_scores": [
+            0.4444578289985657
+        ],
+        "rec_polys": [
+            [
+                [
+                    231,
+                    740
+                ],
+                [
+                    763,
+                    749
+                ],
+                [
+                    759,
+                    1006
+                ],
+                [
+                    227,
+                    997
+                ]
+            ]
+        ],
+        "rec_boxes": [
+            [
+                227,
+                740,
+                763,
+                1006
+            ]
+        ]
+    }
+}

@@ -1,0 +1,167 @@
+{
+    "input_path": "input\\Coba_Tebak3.jpeg",
+    "page_index": null,
+    "page_count": null,
+    "width": 1200,
+    "height": 1600,
+    "model_settings": {
+        "use_doc_preprocessor": true,
+        "use_seal_recognition": false,
+        "use_table_recognition": true,
+        "use_formula_recognition": true,
+        "use_chart_recognition": false,
+        "use_region_detection": true,
+        "format_block_content": false,
+        "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+        ]
+    },
+    "parsing_res_list": [
+        {
+            "block_label": "doc_title",
+            "block_content": "",
+            "block_bbox": [
+                316,
+                731,
+                702,
+                996
+            ],
+            "block_id": 0,
+            "block_order": 1
+        }
+    ],
+    "doc_preprocessor_res": {
+        "input_path": null,
+        "page_index": null,
+        "model_settings": {
+            "use_doc_orientation_classify": false,
+            "use_doc_unwarping": false
+        },
+        "angle": -1
+    },
+    "layout_det_res": {
+        "input_path": null,
+        "page_index": null,
+        "boxes": [
+            {
+                "cls_id": 0,
+                "label": "paragraph_title",
+                "score": 0.30628129839897156,
+                "coordinate": [
+                    316.34716796875,
+                    731.18603515625,
+                    702.1533813476562,
+                    996.105224609375
+                ]
+            }
+        ]
+    },
+    "overall_ocr_res": {
+        "input_path": null,
+        "page_index": null,
+        "model_settings": {
+            "use_doc_preprocessor": false,
+            "use_textline_orientation": true
+        },
+        "dt_polys": [
+            [
+                [
+                    492,
+                    108
+                ],
+                [
+                    774,
+                    46
+                ],
+                [
+                    832,
+                    315
+                ],
+                [
+                    549,
+                    377
+                ]
+            ]
+        ],
+        "text_det_params": {
+            "limit_side_len": 736,
+            "limit_type": "min",
+            "thresh": 0.3,
+            "max_side_limit": 4000,
+            "box_thresh": 0.6,
+            "unclip_ratio": 1.5
+        },
+        "text_type": "general",
+        "textline_orientation_angles": [
+            0
+        ],
+        "text_rec_score_thresh": 0.0,
+        "return_word_box": false,
+        "rec_texts": [
+            "福",
+            ""
+        ],
+        "rec_scores": [
+            0.07510029524564743,
+            0.0
+        ],
+        "rec_polys": [
+            [
+                [
+                    492,
+                    108
+                ],
+                [
+                    774,
+                    46
+                ],
+                [
+                    832,
+                    315
+                ],
+                [
+                    549,
+                    377
+                ]
+            ],
+            [
+                [
+                    316,
+                    731
+                ],
+                [
+                    702,
+                    731
+                ],
+                [
+                    702,
+                    996
+                ],
+                [
+                    316,
+                    996
+                ]
+            ]
+        ],
+        "rec_boxes": [
+            [
+                492.0,
+                46.0,
+                832.0,
+                377.0
+            ],
+            [
+                316.34716796875,
+                731.18603515625,
+                702.1533813476562,
+                996.105224609375
+            ]
+        ]
+    }
+}
