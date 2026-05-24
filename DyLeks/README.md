@@ -281,3 +281,51 @@ flowchart LR
 * **Guru:** Memulai skrining, memantau progress kelas, melihat hasil risiko, dan meminta rekomendasi intervensi.
 * **Anak:** Menulis di kertas fisik, mengerjakan Listen Card, menyelesaikan mini game, dan menerima reward progres.
 * **Sistem Lokal:** Menerima data MQTT, menjalankan OCR, menghitung risiko, menyimpan histori, dan menampilkan visualisasi.
+
+### 7.4 Use Case Detail per Aktor
+
+| Aktor | Use Case | Deskripsi Singkat |
+|---|---|---|
+| Siswa | Screening tulis tangan | Siswa menulis huruf atau kata di kertas fisik, lalu data diproses oleh sistem untuk OCR dan analisis risiko. |
+| Siswa | Listen Card | Siswa mendengarkan audio dan menulis ulang jawaban secara mandiri. |
+| Siswa | Gamifikasi belajar | Siswa menyelesaikan tantangan kecil untuk mendapatkan poin, badge, dan streak. |
+| Guru | Memulai sesi belajar | Guru memilih level, jenis aktivitas, dan memulai screening atau latihan untuk siswa. |
+| Guru | Memantau progres kelas | Guru melihat status tiap siswa, hasil OCR, skor risiko, dan progres latihan dari dashboard. |
+| Guru | Meminta rekomendasi | Guru bertanya ke copilot lokal untuk strategi latihan, intervensi, dan follow-up pembelajaran. |
+| Psikolog | Review hasil asesmen | Psikolog membuka ringkasan hasil skrining untuk melihat pola kesalahan, risiko, dan tren perkembangan. |
+| Psikolog | Menilai kebutuhan intervensi | Psikolog memberi masukan apakah siswa perlu latihan tambahan, observasi lanjutan, atau rujukan. |
+| Psikolog | Menyusun rekomendasi tindak lanjut | Psikolog menyusun saran intervensi berbasis data untuk guru dan orang tua. |
+| Sistem Lokal | Menyimpan dan menghitung data | Sistem menerima data sensor, menghitung risiko, menyimpan histori, dan menampilkan output visual. |
+
+### 7.5 Diagram Use Case Penggunaan Aplikasi
+
+```mermaid
+flowchart LR
+   Student((Siswa))
+   Teacher((Guru))
+   Psychologist((Psikolog))
+   App[(Aplikasi DyLeks)]
+   Server[(FastAPI + SQLite + MQTT)]
+   Grip[(Smart Writing Grip)]
+
+   Student -->|menulis & belajar| App
+   Student -->|mengikuti gamifikasi| App
+   Teacher -->|memulai sesi & memantau dashboard| App
+   Teacher -->|bertanya rekomendasi| App
+   Psychologist -->|melihat ringkasan asesmen| App
+   Psychologist -->|memberi evaluasi/intervensi| App
+
+   Grip -->|kirim data IMU| Server
+   App -->|kirim request data| Server
+   Server -->|hasil OCR, skor risiko, histori| App
+   App -->|laporan visual| Student
+   App -->|dashboard kelas| Teacher
+   App -->|ringkasan klinis| Psychologist
+```
+
+### 7.6 Alur Penggunaan Aplikasi Berdasarkan Peran
+
+* **Siswa:** Masuk ke mode screening, latihan, atau game, lalu menerima umpan balik visual dan audio.
+* **Guru:** Menyiapkan sesi, memantau hasil siswa secara langsung, dan mengunduh ringkasan perkembangan.
+* **Psikolog:** Meninjau data asesmen, memberi interpretasi klinis, lalu mengusulkan intervensi lanjutan.
+* **Sistem:** Menjadi penghubung antara data penulisan fisik, analisis AI lokal, dan laporan untuk guru maupun psikolog.
