@@ -249,31 +249,47 @@ flowchart TD
    Q --> I
 ```
 
-### 7.2 Use Case Diagram Sistem DyLeks
+### 7.2 Use Case Diagram UML Sistem DyLeks
 
-```mermaid
-flowchart LR
-   Teacher((Guru))
-   Student((Anak))
-   Server[(Laptop Server / FastAPI)]
-   Grip[(Smart Writing Grip / ESP32)]
-   DB[(SQLite Local Database)]
-   MQTT[(MQTT Broker Mosquitto)]
+```plantuml
+@startuml
+left to right direction
 
-   Teacher -->|mulai screening| Server
-   Teacher -->|pantau dashboard| Server
-   Teacher -->|bertanya rekomendasi| Server
+actor Siswa
+actor Guru
+actor Psikolog
 
-   Student -->|menulis di kertas| Grip
-   Student -->|mengerjakan listen card| Server
-   Student -->|bermain gamifikasi| Server
+rectangle "Aplikasi DyLeks" {
+   usecase "Screening tulis tangan" as UC1
+   usecase "Listen Card" as UC2
+   usecase "Gamifikasi belajar" as UC3
+   usecase "Memulai sesi belajar" as UC4
+   usecase "Memantau progres kelas" as UC5
+   usecase "Meminta rekomendasi" as UC6
+   usecase "Review hasil asesmen" as UC7
+   usecase "Menilai kebutuhan intervensi" as UC8
+   usecase "Menyusun rekomendasi tindak lanjut" as UC9
+}
 
-   Grip -->|kirim data IMU| MQTT
-   MQTT -->|publish sensor data| Server
-   Server -->|simpan hasil| DB
-   Server -->|ambil histori| DB
-   Server -->|tampilkan hasil| Teacher
-   Server -->|feedback belajar| Student
+Siswa --> UC1
+Siswa --> UC2
+Siswa --> UC3
+
+Guru --> UC4
+Guru --> UC5
+Guru --> UC6
+
+Psikolog --> UC7
+Psikolog --> UC8
+Psikolog --> UC9
+
+UC1 ..> UC5 : data hasil
+UC2 ..> UC5 : progres latihan
+UC3 ..> UC5 : reward & streak
+UC5 ..> UC7 : ringkasan asesmen
+UC6 ..> UC9 : saran intervensi
+
+@enduml
 ```
 
 ### 7.3 Use Case Ringkas per Aktor
@@ -297,7 +313,7 @@ flowchart LR
 | Psikolog | Menyusun rekomendasi tindak lanjut | Psikolog menyusun saran intervensi berbasis data untuk guru dan orang tua. |
 | Sistem Lokal | Menyimpan dan menghitung data | Sistem menerima data sensor, menghitung risiko, menyimpan histori, dan menampilkan output visual. |
 
-### 7.5 Diagram Use Case Penggunaan Aplikasi
+### 7.5 Diagram Interaksi Penggunaan Aplikasi
 
 ```mermaid
 flowchart LR
