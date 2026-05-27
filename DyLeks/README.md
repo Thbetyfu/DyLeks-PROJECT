@@ -1,8 +1,11 @@
----
-# `DyLeks`
+<hr>
+
+# DyLeks
 
 **Ekosistem Edge-AI Offline, PWA Multi-Device, dan Sensor Fusion IoT untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
----
+
+<hr>
+
 ## 1. Masalah: "The 3T Identification Vacuum" di Indonesia
 
 Di balik pesatnya kemajuan EdTech di kota-kota besar, masih ada kesenjangan kualitas pendidikan yang masif di daerah **3T (Tertinggal, Terdepan, dan Terluar)**. Diperkirakan terdapat lebih dari **5 juta anak dengan disleksia** di Indonesia, namun **lebih dari 80% di antaranya tidak pernah terdiagnosis**.
