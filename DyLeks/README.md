@@ -163,7 +163,7 @@ DyLeks/
 │   │   ├── latihan.tsx           # Antarmuka Listen Card mode multisensori
 │   │   ├── game.tsx              # Antarmuka gamifikasi dan reward system
 │   │   └── summary.tsx           # Visualisasi pola kesalahan dan rekomendasi guru
-│   ├── public/assets/            # File audio instruksi (instruksi_ba.mp3, dsb)
+│   ├── public/assets/audio/      # File audio instruksi (instruksi_ba.mp3, dsb)
 │   ├── styles/                   # Glassmorphic UI/UX styling ramah anak disleksia
 │   └── package.json
 

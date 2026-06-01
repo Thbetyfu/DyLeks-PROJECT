@@ -40,7 +40,7 @@ export default function ScreeningPage() {
     if (isPlaying) return;
     
     setIsPlaying(true);
-    const audio = new Audio(`/assets/instruksi_${currentLetter.toLowerCase()}.mp3`);
+    const audio = new Audio(`/assets/audio/instruksi_${currentLetter.toLowerCase()}.mp3`);
     
     audio.play().catch(e => {
       console.error("Audio Play Error, falling back to TTS:", e);

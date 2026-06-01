@@ -1,5 +1,5 @@
 """
-Screening API Router — ARCANA SOTA Engine.
+Screening API Router untuk mesin skrining DyLeks.
 Logika: 5-Level Adaptive Pedagogy.
 """
 

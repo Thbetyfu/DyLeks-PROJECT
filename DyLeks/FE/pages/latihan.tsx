@@ -366,7 +366,7 @@ export default function Latihan() {
       <div className={styles.container}>
         <div className={styles.centeredWrapper} style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '40px' }}>
           <Head>
-            <title>Selesai - Arcana</title>
+            <title>Selesai - DyLeks</title>
           </Head>
           <div className={styles.themeToggleWrapper}>
             <ThemeToggle />
@@ -406,7 +406,7 @@ export default function Latihan() {
       <div className={styles.container}>
         <div className={styles.centeredWrapper}>
           <Head>
-            <title>Belajar - Arcana</title>
+            <title>Belajar - DyLeks</title>
           </Head>
           <div className={styles.themeToggleWrapper}>
             <ThemeToggle />
@@ -471,7 +471,7 @@ export default function Latihan() {
       <div className={styles.container}>
         <div className={styles.centeredWrapper}>
           <Head>
-            <title>Latihan Quiz - Arcana</title>
+            <title>Latihan Quiz - DyLeks</title>
           </Head>
           <div className={styles.themeToggleWrapper}>
             <ThemeToggle />
@@ -564,7 +564,7 @@ export default function Latihan() {
         <div className={styles.centeredWrapper}>
           <div className={screeningStyles.container}>
             <Head>
-              <title>Latihan Menulis - Arcana</title>
+              <title>Latihan Menulis - DyLeks</title>
             </Head>
             <div className={styles.themeToggleWrapper}>
               <ThemeToggle />
@@ -675,7 +675,7 @@ export default function Latihan() {
     <div className={styles.container}>
       <div className={styles.centeredWrapper}>
         <Head>
-          <title>Latihan - Arcana</title>
+          <title>Latihan - DyLeks</title>
         </Head>
         <div className={styles.themeToggleWrapper}>
           <ThemeToggle />

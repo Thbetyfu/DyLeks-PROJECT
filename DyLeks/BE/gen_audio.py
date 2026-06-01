@@ -1,11 +1,13 @@
 import os
 from gtts import gTTS
 
-# Direktori asset frontend
-output_dir = r"d:\4. Thoriq_KULIAH\1.Lomba Thoriq\SEMESTER 4\HackFest\ARCANA\ARCANA\FE\public\assets"
+# Direktori audio frontend: gunakan variabel lingkungan `FRONTEND_ASSETS_DIR`
+# atau default ke folder `../FE/public/assets/audio` relatif terhadap folder `BE/`.
+default_assets = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'FE', 'public', 'assets', 'audio'))
+output_dir = os.environ.get('FRONTEND_ASSETS_DIR', default_assets)
 os.makedirs(output_dir, exist_ok=True)
 
-# List 5 Level ARCANA
+# List 5 target audio
 kata_target = ['A', 'BA', 'BAN', 'NYALA', 'MENEMANI']
 
 print("--- Memulai Generasi Audio Screening ---")
