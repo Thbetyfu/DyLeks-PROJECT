@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import styles from '../styles/Screening.module.css';
 
 const letters = ['A', 'BA', 'BAN', 'NYALA', 'MENEMANI'];
 
 export default function ScreeningPage() {
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mode, setMode] = useState<'listening' | 'camera'>('listening');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -21,7 +23,27 @@ export default function ScreeningPage() {
     setIsPlaying(true);
     const audio = new Audio(`/assets/instruksi_${currentLetter.toLowerCase()}.mp3`);
     
-    audio.play().catch(e => console.error("Audio Play Error:", e));
+    audio.play().catch(e => {
+      console.error("Audio Play Error, falling back to TTS:", e);
+      // Fallback ke Speech Synthesis luring jika file audio tidak ditemukan
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(`Tulis huruf atau kata berikut: ${currentLetter.toLowerCase()}`);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.75;
+        window.speechSynthesis.speak(utterance);
+        
+        // Simulasi onended untuk TTS
+        setTimeout(() => {
+          setIsPlaying(false);
+          setAudioFinished(true);
+        }, 3000);
+      } else {
+        setIsPlaying(false);
+        setAudioFinished(true);
+      }
+    });
+
     audio.onended = () => {
       setIsPlaying(false);
       setAudioFinished(true);
@@ -77,7 +99,7 @@ export default function ScreeningPage() {
       } else {
         // Simpan kolektif ke sessionStorage untuk Summary Page
         sessionStorage.setItem('dyslexia_screening_results', JSON.stringify(updatedResults));
-        window.location.href = '/summary';
+        router.push('/summary');
       }
     } catch (error) {
       console.error("Upload Error:", error);
@@ -90,21 +112,28 @@ export default function ScreeningPage() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Screening - ARCANA</title>
+        <title>Skrining Dini - DyLeks</title>
       </Head>
 
       <div className={styles.header}>
-        <p className={styles.headerTitle}>Halaman screening</p>
+        <div className={styles.headerRow}>
+          <button className={styles.backButton} onClick={() => router.push('/')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="#5d3eb3" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <p className={styles.headerTitle}>Halaman Skrining ({currentIndex + 1}/{letters.length})</p>
+        </div>
         <div className={styles.progressBar}>
           <div className={styles.progress} style={{ width: `${((currentIndex + 1) / letters.length) * 100}%` }}></div>
         </div>
       </div>
       
       <div className={styles.content}>
-        <div className={styles.row} style={{ gap: '16px' }}>
-          <img src="/assets/duck.svg" alt="Duck" className={styles.duck} />
-          <h1 className={styles.title} style={{ fontSize: '1.55rem' }}>
-            Dengarkan lalu tulis dalam kertas
+        <div className={styles.row}>
+          <img src="/assets/duck.svg" alt="Duck Mascot" className={styles.duck} />
+          <h1 className={styles.title}>
+            Dengarkan lalu tulis di kertas
           </h1>
         </div>
       </div>
@@ -122,15 +151,14 @@ export default function ScreeningPage() {
                 alt="Listen" 
                 className={styles.listenIcon} 
                 style={{ 
-                   filter: isPlaying ? 'grayscale(1) brightness(0.7)' : 'brightness(0) invert(1)',
-                   width: '85px'
+                   filter: isPlaying ? 'grayscale(1) brightness(0.7)' : 'brightness(0) invert(1)'
                 }} 
               /> 
               <span className={styles.listenText}>
-                {isPlaying ? 'Mendengarkan...' : 'Dengarkan bunyinya'}
+                {isPlaying ? 'Mendengarkan...' : 'Dengarkan'}
               </span>
             </button>
-            <p className={styles.subTitle}>Tekan tombol untuk mendengar!</p>
+            <p className={styles.subTitle}>Tekan tombol ungu untuk mendengarkan instruksi suara!</p>
           </div>
 
           <div className={styles.bottomContainer}>
@@ -151,7 +179,7 @@ export default function ScreeningPage() {
             {isCapturing && (
               <div className={styles.loadingOverlay}>
                 <div className={styles.spinner}></div>
-                <span>Menganalisis...</span>
+                <span>Sedang menganalisis tulisan tangan...</span>
               </div>
             )}
 
@@ -160,11 +188,11 @@ export default function ScreeningPage() {
               onClick={handleCapture}
               disabled={isCapturing}
             >
-              Ambil foto "{currentLetter}"
+              Ambil Foto "{currentLetter}"
             </button>
           </div>
-          <p className={styles.subTitle} style={{ color: '#6F45BA', marginTop: '20px' }}>
-             Posisikan tulisan di dalam kotak
+          <p className={styles.subTitle} style={{ color: '#5d3eb3', marginTop: '16px' }}>
+             Posisikan kertas tulisan Anda tepat di dalam kotak kamera
           </p>
         </div>
       )}

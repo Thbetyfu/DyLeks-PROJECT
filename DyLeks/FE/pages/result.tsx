@@ -120,6 +120,47 @@ export default function Result() {
         </div>
       </div>
 
+      <h2 className={styles.sectionTitle}>Grafik Pola Kesalahan</h2>
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.45)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255, 255, 255, 0.6)',
+        borderRadius: '24px',
+        padding: '24px',
+        marginBottom: '24px',
+        boxShadow: '0 8px 32px 0 rgba(120, 119, 198, 0.08)'
+      }}>
+        <svg width="100%" height="160" viewBox="0 0 400 160">
+          <line x1="100" y1="20" x2="380" y2="20" stroke="#e9ecef" strokeDasharray="4 4" />
+          <line x1="100" y1="50" x2="380" y2="50" stroke="#e9ecef" strokeDasharray="4 4" />
+          <line x1="100" y1="80" x2="380" y2="80" stroke="#e9ecef" strokeDasharray="4 4" />
+          <line x1="100" y1="110" x2="380" y2="110" stroke="#e9ecef" strokeDasharray="4 4" />
+
+          <text x="10" y="32" fill="#5d3eb3" fontSize="12" fontWeight="700">Inversi b/d</text>
+          <rect x="100" y="20" width={Math.max(10, (stats.inversiBD / 100) * 260)} height="16" rx="8" fill="url(#purpleGrad)" />
+          <text x={110 + (stats.inversiBD / 100) * 260} y="32" fill="#333" fontSize="10" fontWeight="700">{stats.inversiBD}%</text>
+
+          <text x="10" y="62" fill="#5d3eb3" fontSize="12" fontWeight="700">Terbalik</text>
+          <rect x="100" y="50" width={Math.max(10, (stats.terbalik / 100) * 260)} height="16" rx="8" fill="url(#purpleGrad)" />
+          <text x={110 + (stats.terbalik / 100) * 260} y="62" fill="#333" fontSize="10" fontWeight="700">{stats.terbalik}%</text>
+
+          <text x="10" y="92" fill="#5d3eb3" fontSize="12" fontWeight="700">Hilang/Tambah</text>
+          <rect x="100" y="80" width={Math.max(10, (stats.hilangTambah / 100) * 260)} height="16" rx="8" fill="url(#purpleGrad)" />
+          <text x={110 + (stats.hilangTambah / 100) * 260} y="92" fill="#333" fontSize="10" fontWeight="700">{stats.hilangTambah}%</text>
+
+          <text x="10" y="122" fill="#5d3eb3" fontSize="12" fontWeight="700">Inversi p/q</text>
+          <rect x="100" y="110" width={Math.max(10, (stats.inversiPQ / 100) * 260)} height="16" rx="8" fill="url(#purpleGrad)" />
+          <text x={110 + (stats.inversiPQ / 100) * 260} y="122" fill="#333" fontSize="10" fontWeight="700">{stats.inversiPQ}%</text>
+
+          <defs>
+            <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#9c7cf4" />
+              <stop offset="100%" stopColor="#5d3eb3" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
       <h2 className={styles.sectionTitle}>Detail Hasil per Kata</h2>
       <div className={styles.detailSection}>
         {screeningHistory.map((item, idx) => (

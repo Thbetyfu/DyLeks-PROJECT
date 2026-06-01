@@ -563,30 +563,30 @@ Untuk memastikan kelancaran pengembangan ekosistem **DyLeks** luring, rencana ke
     *   [x] Konfigurasi port FastAPI di `BE/app/main.py` atau `wsgi.py` agar berjalan di **port 3002** (HTTP).
     *   [x] Perbarui alamat pemanggilan Fetch API di `FE/pages/screening.tsx` dan `FE/pages/latihan.tsx` dari port `8000` (atau `127.0.0.1:8000`) ke `http://localhost:3002/api/v1/...` (atau menggunakan port `3002` dinamis jaringan lokal).
 
-### ⚙️ Sprint 1: Core Offline Services Development (Prioritas Saat Ini - Minggu Ini)
+### ⚙️ Sprint 1: Core Offline Services Development (Selesai ✅)
 *Target: Mengisi berkas skeleton/kosong di backend dengan algoritma adaptif luring berbasis visual.*
 
 *   **Adaptive Engine (Orton-Gillingham Principles):**
-    *   [ ] Tulis logika di `BE/app/services/adaptive_engine.py` untuk mengelola pengacakan soal (*Spaced Repetition*) dengan menyisipkan 15–20% materi lama.
-    *   [ ] Hubungkan backend API router `learning.py` dengan `adaptive_engine.py` untuk pengambilan soal dinamis.
+    *   [x] Tulis logika di `BE/app/services/adaptive_engine.py` untuk mengelola pengacakan soal (*Spaced Repetition*) dengan menyisipkan 15–20% materi lama.
+    *   [x] Hubungkan backend API router `learning.py` dengan `adaptive_engine.py` untuk pengambilan soal dinamis.
 *   **Scoring & Visual Risk Assessment:**
-    *   [ ] Tulis logika penilaian di `BE/app/services/scoring_service.py` untuk mengolah metrik skor risiko berbasis data visual hasil OCR TrOCR dan prapemrosesan gambar.
+    *   [x] Tulis logika penilaian di `BE/app/services/scoring_service.py` untuk mengolah metrik skor risiko berbasis data visual hasil OCR TrOCR dan prapemrosesan gambar.
 
-### 🤖 Sprint 2: AI OCR & Local LLM Optimization
+### 🤖 Sprint 2: AI OCR & Local LLM Optimization (Selesai ✅)
 *Target: Optimalisasi performa inferensi luring pada perangkat sekolah berspesifikasi rendah.*
 
 *   **TrOCR ONNX Runtime Web Integration:**
-    *   [ ] Selesaikan skrip `ML_Pipeline/src/export_onnx.py` untuk mengonversi model `microsoft/trocr-base-handwritten` ke ONNX dengan kuantisasi data (INT8) agar ukurannya di bawah 100MB.
-    *   [ ] Optimasi pipeline preprocessing gambar (OTSU thresholding dan deskewing) di `image_processor.py` agar waktu pemrosesan di bawah 500ms di laptop Core i3.
+    *   [x] Selesaikan skrip `ML_Pipeline/src/export_onnx.py` untuk mengonversi model `microsoft/trocr-base-handwritten` ke ONNX dengan kuantisasi data (INT8) agar ukurannya di bawah 100MB.
+    *   [x] Optimasi pipeline preprocessing gambar (OTSU thresholding dan deskewing) di `image_processor.py` agar waktu pemrosesan di bawah 500ms di laptop Core i3.
 *   **Ollama SLM Configuration:**
-    *   [ ] Buat dokumentasi panduan konfigurasi model bahasa kecil (seperti Qwen 1.5-1.8B atau Phi-3 Mini) di laptop guru untuk fitur asisten konsultasi *Teacher's Copilot* luring.
+    *   [x] Buat dokumentasi panduan konfigurasi model bahasa kecil (seperti Qwen 1.5-1.8B atau Phi-3 Mini) di laptop guru untuk fitur asisten konsultasi *Teacher's Copilot* luring.
 
-### 📱 Sprint 3: Gamification & Local Mesh Dashboard
+### 📱 Sprint 3: Gamification & Local Mesh Dashboard (Selesai ✅)
 *Target: Melengkapi visualisasi frontend dan interaksi ramah anak.*
 
 *   **UI/UX Refinement:**
-    *   [ ] Rancang halaman `FE/pages/game.tsx` untuk sistem reward (poin, badge, streak) guna menstimulasi motivasi belajar anak disleksia.
-    *   [ ] Sempurnakan halaman `FE/pages/result.tsx` agar menampilkan grafik distribusi pola kesalahan secara intuitif (glassmorphic styling).
+    *   [x] Rancang halaman `FE/pages/game.tsx` untuk sistem reward (poin, badge, streak) guna menstimulasi motivasi belajar anak disleksia.
+    *   [x] Sempurnakan halaman `FE/pages/result.tsx` agar menampilkan grafik distribusi pola kesalahan secara intuitif (glassmorphic styling).
 
 ### 🔌 Sprint 4: IoT Smart Writing Grip & Telemetry Integration (Fase Akhir)
 *Target: Integrasi siber-fisik telemetri sensor grip pensil setelah perangkat keras siap.*

@@ -93,22 +93,12 @@ async def analyze_with_trocr(image_bytes: bytes, target_word: str) -> dict:
         
         # Syarat Lolos (Match): Kenalan langsung ATAU kemiripan sangat tinggi (>80%)
         # Hal ini menangani kasus 'ba' terdeteksi 'a b.'
-        is_match = (target_clean in output_clean) or (similarity_ratio >= 80) or (partial_ratio >= 85)
-
-        risk_score = 0.0
-        errors = []
-
-        if not is_match:
-            # Kalkulasi skor risiko berdasarkan seberapa jauh kesalahannya
-            risk_score = min(100.0, 100.0 - (similarity_ratio * 0.4))
-            if output_clean == "":
-                errors.append("TrOCR tidak mendeteksi tulisan yang valid. Pastikan tulisan cukup tebal dan terkena cahaya terang.")
-            else:
-                errors.append(f"Tulisan terbaca '{generated_text}', meleset dari target '{target_word}'.")
+        from app.services.scoring_service import ScoringService
+        analysis = ScoringService.calculate_risk(target_word, generated_text)
 
         return {
-            "score": round(risk_score, 1),
-            "errors": errors,
+            "score": analysis["score"],
+            "errors": analysis["errors"],
             "engine": "trocr-transformer",
             "debug": {
                 "all_text": generated_text,

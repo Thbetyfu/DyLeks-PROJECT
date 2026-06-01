@@ -52,6 +52,7 @@ export default function Latihan() {
   const [mounted, setMounted] = useState(false);
   const [wrongAttemptsMap, setWrongAttemptsMap] = useState<Record<string, number>>({});
   const [hiddenOptions, setHiddenOptions] = useState<string[]>([]);
+  const [streak, setStreak] = useState(0);
   const totalQuestions = 10;
 
   useEffect(() => {
@@ -68,6 +69,11 @@ export default function Latihan() {
       if (savedProgress) {
         setLevelProgress(parseInt(savedProgress));
       }
+    }
+
+    const savedStreak = sessionStorage.getItem('game_streak');
+    if (savedStreak) {
+      setStreak(parseInt(savedStreak));
     }
   }, []);
 
@@ -655,6 +661,11 @@ export default function Latihan() {
                 <GlowingStar />
                 <span className={styles.levelText}>Level {recommendedLevel}</span>
               </div>
+              {streak > 0 && (
+                <div className={styles.levelBadge} style={{ background: '#FFF0D4', padding: '4px 10px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(255, 159, 67, 0.2)' }}>
+                  <span className={styles.levelText} style={{ color: '#FF9F43', fontSize: '14px' }}>🔥 {streak} Hari</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -681,6 +692,35 @@ export default function Latihan() {
           <p className={styles.tipText}>
             Ingat: huruf <strong>b</strong> seperti bola di depan tongkat! Coba bayangkan tongkat lurus dulu, baru bola di kanan.
           </p>
+        </div>
+
+        <div 
+          className={styles.tipCard} 
+          style={{ 
+            background: 'linear-gradient(135deg, #FF9F43 0%, #FF5252 100%)', 
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            boxShadow: '0 8px 24px rgba(255, 82, 82, 0.15)'
+          }}
+          onClick={() => router.push('/game')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 82, 82, 0.25)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(255, 82, 82, 0.15)';
+          }}
+        >
+          <img src="/assets/duck.svg" alt="Game Mascot" className={styles.tipMascot} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <p className={styles.tipText} style={{ fontSize: '18px', fontWeight: '800', color: '#ffffff' }}>
+              Petualangan Huruf 🎮
+            </p>
+            <p className={styles.tipText} style={{ fontSize: '14px', color: '#ffffff', opacity: 0.9, fontWeight: '500' }}>
+              Main tebak suku kata dan kumpulkan bintang harianmu!
+            </p>
+          </div>
         </div>
 
         <div className={styles.exerciseListContainer}>
