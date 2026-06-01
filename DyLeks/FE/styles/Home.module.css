@@ -4,10 +4,10 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 24px 28px;
   overflow: hidden;
   position: relative;
-  max-width: 1200px;
+  max-width: 1180px;
   margin: 0 auto;
 }
 
@@ -17,15 +17,23 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: -40px;
   gap: 16px;
   animation: fadeIn 0.8s ease-out;
   text-align: center;
+  width: 100%;
+  max-width: 760px;
+  margin: 88px auto 0;
+  padding: 28px 24px 34px;
+  border-radius: 32px;
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(18px);
 }
 
 .mascotContainer {
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   margin: 0 auto 2rem;
   animation: float 4s ease-in-out infinite;
 }
@@ -36,35 +44,36 @@
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 4vw, 3.4rem);
   font-weight: 800;
   margin-bottom: 0.5rem;
-  letter-spacing: 1px;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
 }
 
 .highlight {
   color: var(--highlight);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
 }
 
 .subtitle {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1.02rem;
   font-weight: 500;
-  max-width: 320px;
-  margin: 0 0 16px 0;
-  line-height: 1.5;
+  max-width: 420px;
+  margin: 0 0 10px 0;
+  line-height: 1.7;
 }
 
 .button {
   width: 100%;
   max-width: 360px;
-  margin: 0 auto 56px auto;
+  margin: 10px auto 56px auto;
   background: linear-gradient(135deg, var(--accent), var(--primary));
   color: #ffffff;
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255,255,255,0.2);
   padding: 1rem 2rem;
-  border-radius: 50px;
+  border-radius: 18px;
   font-size: 1.3rem;
   font-weight: 800;
   display: inline-flex;
@@ -72,15 +81,15 @@
   align-items: center;
   gap: 0.8rem;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 12px 28px rgba(91,108,255,0.22);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
   flex-shrink: 0;
 }
 
 .button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4), 0 0 15px var(--highlight);
-  border-color: var(--highlight);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(91,108,255,0.26);
+  filter: saturate(1.05);
 }
 
 .button:active {

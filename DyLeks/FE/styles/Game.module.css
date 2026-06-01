@@ -2,48 +2,55 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f3ff 0%, #edd8fc 100%);
-  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
-  color: #2d2a4a;
+  background: transparent;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text-main);
   padding: 24px;
+  max-width: 1120px;
+  margin: 0 auto;
+  position: relative;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 24px;
-  background: rgba(255, 255, 255, 0.45);
+  background: var(--surface);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-border);
   padding: 16px 20px;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(120, 119, 198, 0.08);
+  border-radius: 22px;
+  box-shadow: var(--glass-shadow);
 }
 
 .backButton {
-  background: none;
-  border: none;
+  background: var(--surface-strong);
+  border: 1px solid var(--glass-border);
   cursor: pointer;
-  padding: 8px;
+  padding: 10px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  box-shadow: var(--glass-shadow);
 }
 
 .backButton:hover {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--accent);
+  color: #fff;
   transform: translateX(-2px);
 }
 
 .title {
   font-size: 20px;
   font-weight: 800;
-  color: #5d3eb3;
+  color: var(--text-main);
   margin: 0;
   text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .statsRow {
@@ -56,19 +63,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: white;
-  border-radius: 12px;
+  background: var(--surface-strong);
+  border-radius: 14px;
   padding: 6px 12px;
   font-weight: 700;
   font-size: 14px;
-  color: #333;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  color: var(--text-main);
+  box-shadow: var(--glass-shadow);
 }
 
 .scoreBadge {
-  background: #fff9db;
-  color: #f08c00;
-  border: 1px solid #ffe3e3;
+  background: rgba(255, 209, 102, 0.18);
+  color: #a86d00;
+  border: 1px solid rgba(255, 209, 102, 0.25);
 }
 
 .gameArea {
@@ -90,48 +97,48 @@
 
 .card {
   aspect-ratio: 1;
-  background: white;
-  border-radius: 16px;
+  background: var(--surface);
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 6px 18px rgba(120, 119, 198, 0.1);
-  border: 2px solid transparent;
+  box-shadow: var(--glass-shadow);
+  border: 1px solid var(--glass-border);
   user-select: none;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(120, 119, 198, 0.15);
+  box-shadow: 0 16px 28px rgba(31, 36, 48, 0.1);
 }
 
 .cardFlipped {
-  background: #7d52f4;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
   color: white;
 }
 
 .cardMatched {
-  background: #d3f9d8;
-  color: #2b8a3e;
+  background: rgba(91, 108, 255, 0.12);
+  color: var(--primary);
   cursor: default;
   transform: none !important;
   box-shadow: none;
 }
 
 .cardHidden {
-  background: #f1f3f5;
+  background: rgba(102, 112, 133, 0.1);
   color: #adb5bd;
   cursor: default;
 }
 
 .instructions {
-  font-size: 16px;
+  font-size: 15px;
   text-align: center;
-  color: #6a6693;
+  color: var(--text-muted);
   margin-bottom: 24px;
   font-weight: 500;
 }
@@ -142,7 +149,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(45, 42, 74, 0.4);
+  background: rgba(15, 18, 31, 0.42);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -152,28 +159,28 @@
 }
 
 .modalContent {
-  background: white;
+  background: var(--surface-strong);
   padding: 40px;
   border-radius: 28px;
   text-align: center;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 24px 52px rgba(31, 36, 48, 0.18);
+  border: 1px solid var(--glass-border);
   animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .modalTitle {
   font-size: 28px;
   font-weight: 800;
-  color: #7d52f4;
+  color: var(--primary);
   margin-top: 16px;
   margin-bottom: 8px;
 }
 
 .modalText {
   font-size: 16px;
-  color: #6a6693;
+  color: var(--text-muted);
   margin-bottom: 24px;
   line-height: 1.5;
 }
@@ -186,7 +193,7 @@
 }
 
 .playAgainBtn {
-  background: linear-gradient(135deg, #7d52f4 0%, #5d3eb3 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
   color: white;
   border: none;
   padding: 14px 28px;
@@ -195,12 +202,28 @@
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 8px 20px rgba(125, 82, 244, 0.3);
+  box-shadow: 0 12px 24px rgba(91,108,255,0.24);
 }
 
 .playAgainBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(125, 82, 244, 0.4);
+  box-shadow: 0 16px 28px rgba(91,108,255,0.28);
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-wrap: wrap;
+  }
+
+  .statsRow {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 420px;
+  }
 }
 
 @keyframes fadeIn {

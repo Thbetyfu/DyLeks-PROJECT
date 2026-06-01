@@ -11,7 +11,7 @@
 2. [System Architecture](#2-system-architecture)
 3. [Tech Stack](#3-tech-stack)
 4. [Project Structure](#4-project-structure)
-5. [Frontend Architecture (Next.js PWA)](#5-frontend-architecture-nextjs-pwa)
+5. [Frontend Architecture (Responsive Next.js PWA)](#5-frontend-architecture-responsive-nextjs-pwa)
 6. [Backend Architecture (FastAPI)](#6-backend-architecture-fastapi)
 7. [AI & ML Pipeline](#7-ai--ml-pipeline)
 8. [Database Design](#8-database-design)
@@ -25,7 +25,7 @@
 
 ## 1. Overview
 
-DyslexiAI is a **mobile-first web application (PWA)** that provides:
+DyslexiAI is a **responsive web application (PWA)** that is built to work equally well on **laptop/desktop** and **mobile/phone** browsers. The layout adapts to the screen size without turning the experience into mobile-only or desktop-only. It provides:
 
 - **Automated dyslexia screening** via handwriting analysis (OCR + ML classification)
 - **Adaptive multi-level learning** following Orton-Gillingham principles
@@ -202,11 +202,11 @@ dyslexiai/
 
 ---
 
-## 5. Frontend Architecture (Next.js PWA)
+## 5. Frontend Architecture (Responsive Next.js PWA)
 
 ### PWA Configuration
 
-The app is configured as a Progressive Web App so it can be installed on mobile devices directly from the browser — no App Store required.
+The app is configured as a Progressive Web App and, more importantly, as a responsive web interface that stays usable on laptop and mobile browsers. Installability from the browser is a bonus, not the design constraint.
 
 ```js
 // next.config.js
@@ -631,7 +631,7 @@ cd apps/web
 npm run dev
 ```
 
-Access the app at `http://localhost:3000`
+Access the app at `http://localhost:3000` from laptop or mobile browser on the same local network.
 
 ### Docker Compose (Alternative)
 
@@ -752,7 +752,7 @@ Child                    Next.js              FastAPI             Ollama/Groq
 
 ## Notes
 
-- **Offline Support**: Basic exercises work offline via service worker cache. Screening and AI Tutor require network.
+- **Offline Support**: Basic exercises work offline via service worker cache. Screening and AI Tutor require local network access to the backend, but the UI is designed to stay responsive on both laptop and mobile screens.
 - **Child Safety**: All AI Tutor prompts include system instructions for child-appropriate language (Bahasa Indonesia, encouraging tone).
 - **ONNX Model**: The `.onnx` classification model needs to be trained separately on dyslexia handwriting data and placed in `apps/api/app/ml/models/`.
 - **PaddleOCR**: Uses PP-OCRv4 mobile-optimized model. First run downloads the model automatically (~40MB).

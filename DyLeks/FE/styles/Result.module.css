@@ -1,18 +1,25 @@
 .container {
   min-height: 100vh;
-  padding: 40px 24px;
-  font-family: 'Poppins', sans-serif;
-  max-width: 1200px;
+  padding: 40px 24px 56px;
+  font-family: Inter, system-ui, sans-serif;
+  max-width: 1120px;
   margin: 0 auto;
+  position: relative;
 }
 
 .header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
   position: relative;
   z-index: 10;
+  background: var(--surface);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  padding: 16px 18px;
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
 }
 
 .backButton {
@@ -23,7 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--glass-bg);
+  background: var(--surface);
   cursor: pointer;
   box-shadow: var(--glass-shadow);
   color: var(--text-main);
@@ -37,16 +44,17 @@
 }
 
 .headerTitle {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--text-main);
   flex: 1;
+  letter-spacing: -0.02em;
 }
 
 .statSection {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
   margin-bottom: 48px;
 }
 
@@ -54,9 +62,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--glass-bg);
-  padding: 16px 20px;
-  border-radius: 16px;
+  background: var(--surface);
+  padding: 18px 20px;
+  border-radius: 18px;
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
 }
@@ -74,15 +82,16 @@
 }
 
 .sectionTitle {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 800;
   margin-bottom: 24px;
   color: var(--text-main);
+  letter-spacing: -0.02em;
 }
 
 .detailSection {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
   margin-bottom: 48px;
 }
@@ -90,11 +99,11 @@
 .detailCard {
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   align-items: center;
   gap: 16px;
-  background: var(--glass-bg);
+  background: var(--surface);
   box-shadow: var(--glass-shadow);
   transition: transform 0.2s;
 }
@@ -131,7 +140,7 @@
 }
 
 .indicationBox {
-  background: var(--glass-bg);
+  background: var(--surface);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
   padding: 24px;
@@ -147,8 +156,8 @@
 }
 
 .recommendationList {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
   margin-bottom: 48px;
 }
@@ -161,13 +170,13 @@
   font-weight: 700;
   color: var(--text-main);
   line-height: 1.5;
-  background: var(--glass-bg);
+  background: var(--surface);
   box-shadow: var(--glass-shadow);
 }
 
 .disclaimerBox {
-  background: rgba(255, 69, 58, 0.1);
-  border: 2px solid var(--accent);
+  background: rgba(255, 138, 91, 0.1);
+  border: 1px solid rgba(255, 138, 91, 0.28);
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 40px;
@@ -185,12 +194,12 @@
   background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
   color: white;
   border: none;
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 18px;
   font-size: 1.2rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0, 0.3), 0 4px 0 rgba(0,0,0,0.5);
+  box-shadow: 0 12px 28px rgba(91,108,255,0.22);
   margin-bottom: 40px;
   transition: all 0.2s ease;
 }

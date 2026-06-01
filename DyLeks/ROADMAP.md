@@ -1,19 +1,19 @@
 # DyLeks Development Roadmap
 
-**Ekosistem Edge-AI Offline & PWA Multi-Device untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
+**Ekosistem Edge-AI Offline & PWA Responsif Multi-Device untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
 
 ---
 
 ## 📋 Ringkasan Eksekutif
 
-Roadmap pengembangan DyLeks dirancang dalam **4 fase utama** dengan durasi kuartal per fase, mencakup infrastruktur backend, frontend PWA, pipeline ML, dan integrasi end-to-end. Target akhir adalah sistem siap implementasi di sekolah-sekolah pedalaman 3T.
+Roadmap pengembangan DyLeks dirancang dalam **4 fase utama** dengan durasi kuartal per fase, mencakup infrastruktur backend, frontend web responsif/PWA, pipeline ML, dan integrasi end-to-end. Target akhir adalah sistem siap implementasi di sekolah-sekolah pedalaman 3T dan nyaman digunakan di laptop maupun HP.
 
 ---
 
 ## 🎯 Fase 1: Foundation & Core Infrastructure (Q1 - Januari hingga Maret 2026)
 
 ### Tujuan Fase
-Membangun fondasi teknis yang kokoh untuk komunikasi multi-device lokal dan database management.
+Membangun fondasi teknis yang kokoh untuk komunikasi multi-device lokal, database management, dan pengalaman web yang tetap rapi di laptop serta mobile.
 
 ### KPI Keberhasilan Fase 1
 - Backend FastAPI dapat dijalankan stabil di laptop server lokal tanpa error startup.
@@ -84,7 +84,7 @@ Membangun fondasi teknis yang kokoh untuk komunikasi multi-device lokal dan data
 ## 📱 Fase 2: Frontend PWA & User Interfaces (Q2 - April hingga Juni 2026)
 
 ### Tujuan Fase
-Membangun aplikasi frontend responsif sebagai PWA dengan antarmuka ramah pengguna (anak disleksia dan guru).
+Membangun aplikasi frontend web responsif sebagai PWA dengan antarmuka ramah pengguna (anak disleksia dan guru) yang tetap nyaman dibuka dari laptop maupun HP.
 
 ### KPI Keberhasilan Fase 2
 - PWA dapat di-install dan dibuka dari browser mobile tanpa ketergantungan internet.
@@ -199,7 +199,7 @@ Membangun aplikasi frontend responsif sebagai PWA dengan antarmuka ramah penggun
 ## 🤖 Fase 3: AI Services & Model Integration (Q3 - Juli hingga September 2026)
 
 ### Tujuan Fase
-Integrasi model AI lokal untuk OCR, text matching, dan pedagogical recommendations.
+Integrasi model AI lokal untuk OCR, text matching, dan pedagogical recommendations yang tetap selaras dengan UI web responsif di laptop dan mobile.
 
 ### KPI Keberhasilan Fase 3
 - Model TrOCR berhasil diekspor ke ONNX dan dapat di-load oleh service lokal.
@@ -320,7 +320,7 @@ Integrasi model AI lokal untuk OCR, text matching, dan pedagogical recommendatio
 ## 🔗 Fase 4: Integration, Testing & Deployment (Q4 - Oktober hingga Desember 2026)
 
 ### Tujuan Fase
-Full integration end-to-end, comprehensive testing, dan siap deploy ke lapangan.
+Full integration end-to-end, comprehensive testing, dan siap deploy ke lapangan dengan pengalaman yang konsisten di laptop maupun HP.
 
 ### KPI Keberhasilan Fase 4
 - Alur end-to-end dari kamera sampai hasil risiko berjalan tanpa putus pada pengujian.

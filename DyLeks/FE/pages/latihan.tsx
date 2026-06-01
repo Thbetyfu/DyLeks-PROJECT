@@ -673,108 +673,116 @@ export default function Latihan() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.pageBackdrop} aria-hidden="true">
+        <div className={styles.backdropOrbOne}></div>
+        <div className={styles.backdropOrbTwo}></div>
+        <div className={styles.backdropOrbThree}></div>
+      </div>
+
       <div className={styles.centeredWrapper}>
         <Head>
           <title>Latihan - DyLeks</title>
         </Head>
-        <div className={styles.themeToggleWrapper}>
+
+        <div className={`${styles.themeToggleWrapper} ${styles.themeToggleLanding}`}>
           <ThemeToggle />
         </div>
 
-        <div className={styles.topSection}>
-          <div style={{ height: '30px' }}></div>
-          <div className={styles.header}>
-            <div className={styles.avatar}>
-              <div className={styles.mascotWrapper}>
-                {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
-              </div>
+        <div className={styles.landingHero}>
+          <div className={styles.heroGlow}></div>
+          <div className={styles.heroTopRow}>
+            <div className={styles.heroBadge}>
+              <GlowingStar />
+              <span>Latihan adaptif</span>
             </div>
-            <div className={styles.greetingInfo}>
-            <h1 className={styles.greetingTitle}>Hai!</h1>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <div className={styles.levelBadge}>
-                <GlowingStar />
-                <span className={styles.levelText}>Level {recommendedLevel}</span>
-              </div>
-              {streak > 0 && (
-                <div className={styles.levelBadge} style={{ background: '#FFF0D4', padding: '4px 10px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(255, 159, 67, 0.2)' }}>
-                  <span className={styles.levelText} style={{ color: '#FF9F43', fontSize: '14px' }}>🔥 {streak} Hari</span>
-                </div>
-              )}
+            <div className={styles.heroMascotBubble}>
+              {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className={styles.bottomSection}>
-        <div className={styles.progressCard}>
-          <h2 className={styles.progressTitle}>Progress latihanmu</h2>
-          <div className={styles.progressTrack}>
-            <div className={styles.progressFill} style={{ width: `${levelProgress}%` }}></div>
+          <div className={styles.heroCopy}>
+            <p className={styles.heroEyebrow}>Mode belajar personal</p>
+            <h1 className={styles.heroTitle}>Latihan yang lebih fokus, tenang, dan jelas</h1>
+            <p className={styles.heroSubtitle}>
+              Lanjutkan dari progres terakhir, dengarkan instruksi, lalu pilih latihan yang paling pas untuk levelmu.
+            </p>
           </div>
-          <div className={styles.progressActionRow}>
-            <span className={styles.progressSubtitle}>
-              <strong className={styles.percentText}>{levelProgress}%</strong> menuju {levelProgress === 100 ? `Level ${recommendedLevel + 1}` : `Level ${recommendedLevel + 1}`}
-            </span>
-            <button className={styles.lanjutButton} onClick={handleLanjut}>
-              {levelProgress === 100 ? 'Level Berikutnya' : 'Lanjut'}
+
+          <div className={styles.heroChips}>
+            <span className={styles.heroChip}>Level {recommendedLevel}</span>
+            <span className={styles.heroChip}>{levelProgress}% selesai</span>
+            {streak > 0 && <span className={styles.heroChip}>🔥 {streak} hari konsisten</span>}
+          </div>
+
+          <div className={styles.heroActions}>
+            <button className={styles.heroPrimaryButton} onClick={handleLanjut}>
+              {levelProgress === 100 ? 'Lanjut ke Level Berikutnya' : 'Mulai Latihan'}
+            </button>
+            <button className={styles.heroSecondaryButton} onClick={() => router.push('/game')}>
+              Coba Petualangan Huruf
             </button>
           </div>
         </div>
 
-        <div className={styles.tipCard}>
-          <div className={styles.tipMascot}>
-            {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
-          </div>
-          <p className={styles.tipText}>
-            Ingat: huruf <strong>b</strong> seperti bola di depan tongkat! Coba bayangkan tongkat lurus dulu, baru bola di kanan.
-          </p>
-        </div>
-
-        <div 
-          className={styles.tipCard} 
-          style={{ 
-            background: 'linear-gradient(135deg, #FF9F43 0%, #FF5252 100%)', 
-            cursor: 'pointer',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-            boxShadow: '0 8px 24px rgba(255, 82, 82, 0.15)'
-          }}
-          onClick={() => router.push('/game')}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 82, 82, 0.25)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(255, 82, 82, 0.15)';
-          }}
-        >
-          <div className={styles.tipMascot}>
-            {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <p className={styles.tipText} style={{ fontSize: '18px', fontWeight: '800', color: '#ffffff' }}>
-              Petualangan Huruf 🎮
-            </p>
-            <p className={styles.tipText} style={{ fontSize: '14px', color: '#ffffff', opacity: 0.9, fontWeight: '500' }}>
-              Main tebak suku kata dan kumpulkan bintang harianmu!
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.exerciseListContainer}>
-          <h2 className={styles.sectionTitle}>Huruf yang perlu dilatih</h2>
-
-          <div className={styles.exerciseCard}>
-            <span className={styles.exerciseText}>Inversi b/d sering tertukar</span>
+        <div className={styles.bottomSection}>
+          <div className={styles.progressCard}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.progressTitle}>Progress latihanmu</h2>
+              <span className={styles.progressBadge}>{levelProgress === 100 ? 'Siap lanjut' : 'Masih bertahap'}</span>
+            </div>
+            <div className={styles.progressTrack}>
+              <div className={styles.progressFill} style={{ width: `${levelProgress}%` }}></div>
+            </div>
+            <div className={styles.progressActionRow}>
+              <span className={styles.progressSubtitle}>
+                <strong className={styles.percentText}>{levelProgress}%</strong> menuju Level {recommendedLevel + 1}
+              </span>
+              <button className={styles.lanjutButton} onClick={handleLanjut}>
+                {levelProgress === 100 ? 'Level Berikutnya' : 'Lanjut'}
+              </button>
+            </div>
           </div>
 
-          <div className={styles.exerciseCard}>
-            <span className={styles.exerciseText}>Inversi p/q sering tertukar</span>
+          <div className={styles.sectionHeaderStandalone}>
+            <h2 className={styles.sectionTitle}>Fokus hari ini</h2>
+            <p className={styles.sectionSubtitle}>Pilih latihan yang paling relevan dengan progresmu sekarang.</p>
+          </div>
+
+          <div className={styles.featureGrid}>
+            <div className={styles.featureCard}>
+              <div className={styles.featureIconWrap}>
+                {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
+              </div>
+              <div className={styles.featureText}>
+                <h3 className={styles.featureTitle}>Latihan bertahap</h3>
+                <p className={styles.featureDesc}>Mulai dari huruf dasar, lalu naik ke kata dan menulis.</p>
+              </div>
+            </div>
+
+            <div className={`${styles.featureCard} ${styles.featureCardAccent}`} onClick={() => router.push('/game')}>
+              <div className={styles.featureText}>
+                <h3 className={styles.featureTitle}>Petualangan Huruf</h3>
+                <p className={styles.featureDesc}>Mode permainan singkat untuk mengunci motivasi belajar.</p>
+              </div>
+              <div className={styles.featureArrow}>→</div>
+            </div>
+          </div>
+
+          <div className={styles.exerciseListContainer}>
+            <h2 className={styles.sectionTitle}>Yang sedang dilatih</h2>
+
+            <div className={styles.exerciseCard}>
+              <span className={styles.exerciseText}>Inversi b/d sering tertukar</span>
+              <span className={styles.exerciseHint}>Fokus visual kiri-kanan</span>
+            </div>
+
+            <div className={styles.exerciseCard}>
+              <span className={styles.exerciseText}>Inversi p/q sering tertukar</span>
+              <span className={styles.exerciseHint}>Latih orientasi bentuk huruf</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   );
 }

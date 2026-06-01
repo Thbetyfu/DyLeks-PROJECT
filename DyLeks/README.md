@@ -2,7 +2,7 @@
 
 # DyLeks
 
-**Ekosistem Edge-AI Offline, PWA Multi-Device, dan Sensor Fusion IoT untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
+**Ekosistem Edge-AI Offline, PWA Responsif Multi-Device, dan Sensor Fusion IoT untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
 
 <hr>
 
@@ -36,19 +36,19 @@ Di daerah 3T, tantangannya berlipat ganda:
 
 Sistem dioptimasi secara arsitektural agar mampu berjalan lancar pada perangkat komputasi standar sekolah pelosok melalui kompresi model ke format **ONNX Runtime**:
 
-| Komponen                            | Teknologi                               | Peran & Optimalisasi 3T                                                                                                                                      |
-| ----------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Frontend Client** | **Next.js 14 + PWA** | UI/UX responsif untuk Laptop & Mobile; performa rendering luring. |
-| **Backend Server** | **FastAPI + MQTT Client** | Mengelola REST API sekaligus menjadi subscriber pesan MQTT untuk menangkap data sensor dari grip secara asinkron. |
-| **IoT Microcontroller** | **ESP32 DevKit v1** | Menjadi otak pada grip pensil; membaca data sensorik mentah lokal dan mentransmisikannya via Wi-Fi lokal kelas. |
-| **Hardware Sensor** | **IMU MPU6050 (6-Axis)** | Mengombinasikan 3-axis Accelerometer dan 3-axis Gyroscope untuk mendeteksi getaran, kecepatan, dan sudut kemiringan tarikan garis tangan anak. |
-| **IoT Broker Protocol** | **Eclipse Mosquitto (MQTT)** | Message broker ringan yang di-host lokal di laptop guru untuk menjamin pengiriman data sensorik berlatensi rendah tanpa internet. |
-| **AI OCR Engine** | **TrOCR + ONNX Web** | Model Vision-Transformer (Microsoft/trocr-base) yang dikompresi ke format ONNX agar inferensi tulisan tangan berjalan sangat ringan tanpa butuh GPU diskrit. |
-| **Fuzzy Matching** | **RapidFuzz** | Algoritma pencocokan kata lokal dengan efisiensi tinggi untuk toleransi kesalahan ketik ringan pada Listen Card. |
-| **Audio Scaffolding** | **Python TTS Generator** | Memproduksi petunjuk vokal luring (`gen_audio.py`) untuk memandu siswa pelosok dengan pendekatan multisensori. |
-| **Local Database** | **SQLite** | Menyimpan koordinat sensorik dan pola kinematik menulis anak bersama hasil akhir asesmen. |
-| **Offline LLM Engine** | **Ollama + Phi-3 / Qwen-1.5-B** | Menjalankan Small Language Model (SLM) terkompresi secara lokal di laptop untuk mengotaki Teacher's Copilot tanpa internet. |
-| **Kinesthetic Tracer Engine** | **Smart Writing Grip + MQTT Telemetry** | Menangkap data trajektori, tremor, dan hesitation saat anak menulis di kertas fisik. |
+| Komponen                            | Teknologi                                     | Peran & Optimalisasi 3T                                                                                                                                      |
+| ----------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Frontend Client**           | **Next.js 14 + PWA**                    | UI/UX responsif untuk Laptop & Mobile; performa rendering luring.                                                                                            |
+| **Backend Server**            | **FastAPI + MQTT Client**               | Mengelola REST API sekaligus menjadi subscriber pesan MQTT untuk menangkap data sensor dari grip secara asinkron.                                            |
+| **IoT Microcontroller**       | **ESP32 DevKit v1**                     | Menjadi otak pada grip pensil; membaca data sensorik mentah lokal dan mentransmisikannya via Wi-Fi lokal kelas.                                              |
+| **Hardware Sensor**           | **IMU MPU6050 (6-Axis)**                | Mengombinasikan 3-axis Accelerometer dan 3-axis Gyroscope untuk mendeteksi getaran, kecepatan, dan sudut kemiringan tarikan garis tangan anak.               |
+| **IoT Broker Protocol**       | **Eclipse Mosquitto (MQTT)**            | Message broker ringan yang di-host lokal di laptop guru untuk menjamin pengiriman data sensorik berlatensi rendah tanpa internet.                            |
+| **AI OCR Engine**             | **TrOCR + ONNX Web**                    | Model Vision-Transformer (Microsoft/trocr-base) yang dikompresi ke format ONNX agar inferensi tulisan tangan berjalan sangat ringan tanpa butuh GPU diskrit. |
+| **Fuzzy Matching**            | **RapidFuzz**                           | Algoritma pencocokan kata lokal dengan efisiensi tinggi untuk toleransi kesalahan ketik ringan pada Listen Card.                                             |
+| **Audio Scaffolding**         | **Python TTS Generator**                | Memproduksi petunjuk vokal luring (`gen_audio.py`) untuk memandu siswa pelosok dengan pendekatan multisensori.                                             |
+| **Local Database**            | **SQLite**                              | Menyimpan koordinat sensorik dan pola kinematik menulis anak bersama hasil akhir asesmen.                                                                    |
+| **Offline LLM Engine**        | **Ollama + Phi-3 / Qwen-1.5-B**         | Menjalankan Small Language Model (SLM) terkompresi secara lokal di laptop untuk mengotaki Teacher's Copilot tanpa internet.                                  |
+| **Kinesthetic Tracer Engine** | **Smart Writing Grip + MQTT Telemetry** | Menangkap data trajektori, tremor, dan hesitation saat anak menulis di kertas fisik.                                                                         |
 
 ---
 
@@ -107,9 +107,9 @@ Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* loka
 
 * **Mekanisme Sistem:** Perangkat Smart Writing Grip menangkap data trajektori menulis anak langsung dari pensil fisik melalui protokol MQTT ke backend FastAPI^^.
 * **Fungsi AI Lokal:** Algoritma pattern recognition pada laptop server menganalisis proses kinematik penulisan^^.
-   * **Hesitation Detection:** Mengukur jeda waktu berhenti (ragu-ragu) anak saat menyambung suku kata^^.
-   * **Tremor Analysis:** Mendeteksi getaran tangan berlebih akibat kecemasan kognitif (*anxiety spike*)^^.
-   * **Inversion Stroke Detection:** Menganalisis apakah arah putaran tangan terbalik (misal membentuk perut huruf 'd' atau 'b' dari bawah ke atas) yang menjadi ciri khas disgrafia/disleksia^^.
+  * **Hesitation Detection:** Mengukur jeda waktu berhenti (ragu-ragu) anak saat menyambung suku kata^^.
+  * **Tremor Analysis:** Mendeteksi getaran tangan berlebih akibat kecemasan kognitif (*anxiety spike*)^^.
+  * **Inversion Stroke Detection:** Menganalisis apakah arah putaran tangan terbalik (misal membentuk perut huruf 'd' atau 'b' dari bawah ke atas) yang menjadi ciri khas disgrafia/disleksia^^.
 * **Nilai Juri SFT:** Menambahkan dimensi *sensor fusion* dan *embedded system* sehingga solusi lebih kuat secara engineering.
 
 ### J. Gamification & Reward System (Motivasi Belajar Anak)
@@ -119,15 +119,17 @@ Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* loka
 * **Contoh Mode Game:** Matching huruf atau suku kata, tebak kata dari audio, trace-the-letter challenge, dan streak challenge harian^^.
 * **Nilai Juri SFT:** Menambah aspek *engagement* dan *usability* sehingga sistem tidak hanya fungsional, tetapi juga lebih menarik bagi anak disleksia.
 
+J. Gamification & Reward System (Motivasi Belajar Anak)
+
 ### K. Visual Use Case Ringkas per Fitur
 
-| Fitur | Use Case Utama | Output Visual |
-|---|---|---|
-| Screening | Guru memilih level, anak menulis, sistem memberi skor | Progress bar, skor risiko, hasil OCR |
-| Listen Card | Anak mendengar audio lalu menulis ulang | Kartu audio, highlight warna, feedback benar/salah |
-| OG Cumulative Review | Sistem menyisipkan materi lama saat level baru | Matriks fonogram, jadwal review, indikator mastery |
-| IoT Handwriting Analyzer | Grip mengirim data tulisan ke server | Grafik tremor, hesitation, stroke pattern |
-| Gamification | Anak menyelesaikan misi dan mendapat reward | Badge, bintang, poin, streak harian |
+| Fitur                    | Use Case Utama                                        | Output Visual                                      |
+| ------------------------ | ----------------------------------------------------- | -------------------------------------------------- |
+| Screening                | Guru memilih level, anak menulis, sistem memberi skor | Progress bar, skor risiko, hasil OCR               |
+| Listen Card              | Anak mendengar audio lalu menulis ulang               | Kartu audio, highlight warna, feedback benar/salah |
+| OG Cumulative Review     | Sistem menyisipkan materi lama saat level baru        | Matriks fonogram, jadwal review, indikator mastery |
+| IoT Handwriting Analyzer | Grip mengirim data tulisan ke server                  | Grafik tremor, hesitation, stroke pattern          |
+| Gamification             | Anak menyelesaikan misi dan mendapat reward           | Badge, bintang, poin, streak harian                |
 
 ---
 
@@ -299,18 +301,18 @@ graph LR
 
 ### 7.4 Use Case Detail per Aktor
 
-| Aktor | Use Case | Deskripsi Singkat |
-|---|---|---|
-| Siswa | Screening tulis tangan | Siswa menulis huruf atau kata di kertas fisik, lalu data diproses oleh sistem untuk OCR dan analisis risiko. |
-| Siswa | Listen Card | Siswa mendengarkan audio dan menulis ulang jawaban secara mandiri. |
-| Siswa | Gamifikasi belajar | Siswa menyelesaikan tantangan kecil untuk mendapatkan poin, badge, dan streak. |
-| Guru | Memulai sesi belajar | Guru memilih level, jenis aktivitas, dan memulai screening atau latihan untuk siswa. |
-| Guru | Memantau progres kelas | Guru melihat status tiap siswa, hasil OCR, skor risiko, dan progres latihan dari dashboard. |
-| Guru | Meminta rekomendasi | Guru bertanya ke copilot lokal untuk strategi latihan, intervensi, dan follow-up pembelajaran. |
-| Psikolog | Review hasil asesmen | Psikolog membuka ringkasan hasil skrining untuk melihat pola kesalahan, risiko, dan tren perkembangan. |
-| Psikolog | Menilai kebutuhan intervensi | Psikolog memberi masukan apakah siswa perlu latihan tambahan, observasi lanjutan, atau rujukan. |
-| Psikolog | Menyusun rekomendasi tindak lanjut | Psikolog menyusun saran intervensi berbasis data untuk guru dan orang tua. |
-| Sistem Lokal | Menyimpan dan menghitung data | Sistem menerima data sensor, menghitung risiko, menyimpan histori, dan menampilkan output visual. |
+| Aktor        | Use Case                           | Deskripsi Singkat                                                                                            |
+| ------------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Siswa        | Screening tulis tangan             | Siswa menulis huruf atau kata di kertas fisik, lalu data diproses oleh sistem untuk OCR dan analisis risiko. |
+| Siswa        | Listen Card                        | Siswa mendengarkan audio dan menulis ulang jawaban secara mandiri.                                           |
+| Siswa        | Gamifikasi belajar                 | Siswa menyelesaikan tantangan kecil untuk mendapatkan poin, badge, dan streak.                               |
+| Guru         | Memulai sesi belajar               | Guru memilih level, jenis aktivitas, dan memulai screening atau latihan untuk siswa.                         |
+| Guru         | Memantau progres kelas             | Guru melihat status tiap siswa, hasil OCR, skor risiko, dan progres latihan dari dashboard.                  |
+| Guru         | Meminta rekomendasi                | Guru bertanya ke copilot lokal untuk strategi latihan, intervensi, dan follow-up pembelajaran.               |
+| Psikolog     | Review hasil asesmen               | Psikolog membuka ringkasan hasil skrining untuk melihat pola kesalahan, risiko, dan tren perkembangan.       |
+| Psikolog     | Menilai kebutuhan intervensi       | Psikolog memberi masukan apakah siswa perlu latihan tambahan, observasi lanjutan, atau rujukan.              |
+| Psikolog     | Menyusun rekomendasi tindak lanjut | Psikolog menyusun saran intervensi berbasis data untuk guru dan orang tua.                                   |
+| Sistem Lokal | Menyimpan dan menghitung data      | Sistem menerima data sensor, menghitung risiko, menyimpan histori, dan menampilkan output visual.            |
 
 ### 7.5 Diagram Interaksi Penggunaan Aplikasi
 
@@ -362,11 +364,13 @@ Pengembangan **DyLeks** dilandasi oleh riset kualitatif mendalam terhadap penggu
 Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan keamanan peramban web modern, DyLeks menerapkan strategi *deployment* sebagai berikut:
 
 ### A. Fully Local Offline Deployment (HTTP-to-HTTP)
+
 1. **Server Lokal Mandiri:** Frontend Next.js disajikan dari laptop server guru (menggunakan web server ringan lokal seperti Caddy) pada port `3001` dalam protokol HTTP.
 2. **Backend API:** FastAPI berjalan secara lokal di laptop server guru pada port `3002` dalam protokol HTTP.
 3. **Penyelesaian Mixed Content Blocking:** Dengan menjaga agar Frontend dan Backend berjalan dalam lingkup protokol HTTP murni yang sama di jaringan Wi-Fi kelas (`http://192.168.x.x` atau domain lokal mDNS seperti `http://dyleks.local`), peramban klien (smartphone/tablet siswa) tidak akan memblokir request API (*AJAX/Fetch*). Hal ini menyelesaikan isu *Mixed Content Blocking* yang terjadi jika frontend dihost di HTTPS publik (misal Vercel) namun backend berada di HTTP lokal.
 4. **PWA Offline Installation:** PWA Next.js dapat dipasang langsung ke layar utama (*Add to Home Screen*) peramban siswa melalui alamat IP lokal server tanpa koneksi internet sama sekali.
 
 ### B. Isolasi Data Sekolah (Zero-Config Multitenancy)
+
 * Setiap laptop guru menjalankan instans *local database SQLite* (`dyslexiai_local.db`) mandiri.
 * Dengan demikian, kerahasiaan data anak di masing-masing sekolah terjaga secara penuh, aman, dan terisolasi secara struktural tanpa risiko kebocoran data keluar ataupun bentrokan konfigurasi IP eksternal.
