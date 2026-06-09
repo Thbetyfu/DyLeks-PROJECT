@@ -906,3 +906,150 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Telemetry Widget Styles */
+.telemetryCard {
+  background: var(--surface-strong);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.telemetryHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.telemetryStatusLight {
+  width: 10px;
+  height: 10px;
+  background-color: #58CC02;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #58CC02;
+  animation: pulseGreen 2s infinite alternate;
+  flex-shrink: 0;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Status light berubah merah saat sensor mendeteksi danger */
+.telemetryStatusDanger {
+  background-color: #EE4B2B !important;
+  box-shadow: 0 0 10px #EE4B2B !important;
+  animation: pulseDanger 0.8s infinite alternate !important;
+}
+
+@keyframes pulseGreen {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@keyframes pulseDanger {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+.telemetryTitle {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.telemetryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  border-top: 1px dashed var(--glass-border);
+  padding-top: 10px;
+}
+
+.telemetryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.telemetryLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.telemetryValue {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.telemetryDanger {
+  color: #EE4B2B !important;
+}
+
+.telemetryActive {
+  color: #58CC02 !important;
+  font-weight: 900;
+}
+
+/* DDS Banner — varian berdasarkan jenis aksi */
+.ddsBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  animation: slideIn 0.3s ease;
+  text-align: left;
+  background: rgba(91, 108, 255, 0.1);
+  border-left: 4px solid #5b6cff;
+  color: var(--text-main);
+}
+
+/* Oranye: DDS reduce_options — mengurangi opsi untuk mengurangi beban kognitif */
+.ddsBannerReduce {
+  background: rgba(255, 159, 67, 0.12) !important;
+  border-left-color: #FF9F43 !important;
+}
+
+/* Biru: DDS play_audio_hint — stimulasi auditori saat motorik lelah */
+.ddsBannerAudio {
+  background: rgba(91, 108, 255, 0.1) !important;
+  border-left-color: #5b6cff !important;
+}
+
+/* Ikon banner DDS dengan warna kontekstual */
+.ddsBannerIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: inherit;
+  margin-top: 1px;
+}
+
+.ddsBannerReduce .ddsBannerIcon {
+  color: #FF9F43;
+}
+
+.ddsBannerAudio .ddsBannerIcon {
+  color: #5b6cff;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

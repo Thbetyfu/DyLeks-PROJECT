@@ -50,15 +50,14 @@ class AdaptiveEngine:
         exercise_id: str,
         user_answer: str,
         response_time_ms: int,
+        grip_pressure: Optional[float] = None,
+        grip_tremor: Optional[float] = None,
+        grip_hesitation: Optional[float] = None,
         session_id: Optional[str] = None
     ) -> dict:
         """
-        Mengevaluasi jawaban siswa, menyimpan ke basis data jika session_id tersedia, dan menghitung feedback.
-        
-        Alasan ('Why'):
-          Pencatatan is_correct dan response_time_ms sangat krusial untuk mengukur beban kognitif anak.
-          Jika session_id diberikan, data disimpan di database luring untuk analisis pola error di summary.
-          Jika tidak (mode coba-coba anonim), evaluasi tetap dilakukan langsung di memori untuk respons cepat.
+        Mengevaluasi jawaban siswa, menganalisis beban kognitif anak secara real-time via DDS,
+        menyimpan respon ke database, dan mengembalikan feedback serta aksi adaptasi.
         """
         exercise = db.query(Exercise).filter(Exercise.id == exercise_id).first()
         if not exercise:
@@ -79,6 +78,58 @@ class AdaptiveEngine:
             db.add(response_record)
             db.commit()
 
+        # 1. Metrik Keakuratan Historis (kesalahan beruntun)
+        consecutive_errors = 0
+        if session_id:
+            recent_responses = (
+                db.query(ExerciseResponse)
+                .filter(ExerciseResponse.session_id == session_id)
+                .order_by(ExerciseResponse.id.desc())
+                .limit(2)
+                .all()
+            )
+            for r in recent_responses:
+                if not r.is_correct:
+                    consecutive_errors += 1
+                else:
+                    break
+        
+        # Tambah respon saat ini jika salah
+        if not is_correct:
+            consecutive_errors += 1
+
+        # 2. Metrik Deteksi Kelelahan / Kebingungan (DDS Logic)
+        is_hesitant = response_time_ms > 7000 or (grip_hesitation is not None and grip_hesitation > 0.6)
+        is_fatigued = (grip_tremor is not None and grip_tremor > 0.6) or \
+                      (grip_pressure is not None and (grip_pressure < 0.2 or grip_pressure > 0.8))
+        is_frustrated = consecutive_errors >= 2
+
+        dds_active = False
+        dds_action = None
+        dds_message = None
+        reduced_options = None
+
+        if is_hesitant or is_fatigued or is_frustrated:
+            dds_active = True
+            if is_frustrated or is_hesitant:
+                dds_action = "reduce_options"
+                dds_message = "Jangan khawatir! Kakak bantu menyederhanakan pilihan ganda ya."
+            else:
+                dds_action = "play_audio_hint"
+                dds_message = "Tanganmu lelah? Mari dengarkan suara petunjuk terlebih dahulu!"
+
+            # Cari dan reduksi opsi jika terdapat opsi pilihan ganda
+            if exercise.content and isinstance(exercise.content, dict) and "options" in exercise.content:
+                options = exercise.content["options"]
+                correct = exercise.correct_answer
+                distractors = [opt for opt in options if opt.strip().lower() != correct.strip().lower()]
+                if distractors:
+                    import random
+                    chosen_distractor = random.choice(distractors)
+                    reduced_list = [correct, chosen_distractor]
+                    random.shuffle(reduced_list)
+                    reduced_options = reduced_list
+
         # Generate feedback
         if is_correct:
             feedback_msg = "Luar biasa! Jawabanmu sangat tepat."
@@ -89,5 +140,12 @@ class AdaptiveEngine:
             "status": "success",
             "is_correct": is_correct,
             "correct_answer": exercise.correct_answer,
-            "feedback": feedback_msg
+            "feedback": feedback_msg,
+            "dds_active": dds_active,
+            "dds_action": dds_action,
+            "dds_message": dds_message,
+            "reduced_options": reduced_options,
+            "consecutive_errors": consecutive_errors  # sync state DDS ke FE
         }
+
+

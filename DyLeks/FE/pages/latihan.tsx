@@ -60,6 +60,16 @@ export default function Latihan() {
   const totalQuestions = 10;
   const { theme } = useTheme();
 
+  // DDS States
+  const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+  const [consecutiveErrors, setConsecutiveErrors] = useState<number>(0);
+  const [ddsActive, setDdsActive] = useState<boolean>(false);
+  const [ddsAction, setDdsAction] = useState<string | null>(null);
+  const [ddsMessage, setDdsMessage] = useState<string | null>(null);
+  const [telemetryTremor, setTelemetryTremor] = useState<number>(0.21);
+  const [telemetryPressure, setTelemetryPressure] = useState<number>(0.52);
+  const [telemetryHesitation, setTelemetryHesitation] = useState<number>(0.14);
+
   useEffect(() => {
     setMounted(true);
  
@@ -93,7 +103,54 @@ export default function Latihan() {
 
   const loadNewQuestion = (level: number, excludeTarget?: string) => {
     const wordItem = getRandomTarget(level, excludeTarget);
-    const opts = buildQuizOptions(level, wordItem.target);
+    let opts = buildQuizOptions(level, wordItem.target);
+    
+    // Set waktu mulai soal
+    setQuestionStartTime(Date.now());
+    
+    // Simulasi telemetri grip sensor secara real-time berdasarkan riwayat kesalahan
+    const hasPastErrors = consecutiveErrors > 0;
+    const baseTremor = hasPastErrors ? 0.45 : 0.22;
+    const basePressure = hasPastErrors ? 0.35 : 0.55;
+    const baseHesitation = hasPastErrors ? 0.40 : 0.15;
+    
+    const nextTremor = parseFloat((baseTremor + Math.random() * 0.15).toFixed(2));
+    const nextPressure = parseFloat((basePressure - Math.random() * 0.15).toFixed(2));
+    const nextHesitation = parseFloat((baseHesitation + Math.random() * 0.15).toFixed(2));
+    
+    setTelemetryTremor(nextTremor);
+    setTelemetryPressure(nextPressure);
+    setTelemetryHesitation(nextHesitation);
+
+    // Evaluasi status kelelahan/kebingungan kognitif (DDS Mode)
+    const isHesitant = nextHesitation > 0.6;
+    const isFatigued = nextTremor > 0.6 || nextPressure < 0.2 || nextPressure > 0.8;
+    const isFrustrated = consecutiveErrors >= 2;
+
+    if (isHesitant || isFatigued || isFrustrated) {
+      setDdsActive(true);
+      if (isFrustrated || isHesitant) {
+        setDdsAction("reduce_options");
+        setDdsMessage("Jangan khawatir! Kakak bantu menyederhanakan pilihan ganda ya.");
+        const distractors = opts.filter(opt => opt !== wordItem.target);
+        if (distractors.length > 0) {
+          const randomDistractor = distractors[Math.floor(Math.random() * distractors.length)];
+          opts = [wordItem.target, randomDistractor].sort(() => Math.random() - 0.5);
+        }
+      } else {
+        setDdsAction("play_audio_hint");
+        setDdsMessage("Tanganmu lelah? Mari dengarkan suara petunjuk terlebih dahulu!");
+        // Auto-play petunjuk suara setelah jeda singkat
+        setTimeout(() => {
+          playLetterSound(wordItem.target);
+        }, 800);
+      }
+    } else {
+      setDdsActive(false);
+      setDdsAction(null);
+      setDdsMessage(null);
+    }
+
     setCurrentTarget(wordItem.target);
     setCurrentOptions(opts);
   };
@@ -114,40 +171,81 @@ export default function Latihan() {
   };
 
   const handleOptionClick = (option: string) => {
-    
     if (feedbackTimeout) clearTimeout(feedbackTimeout);
 
     setSelectedOption(option);
     
-   
-    const analytics = JSON.parse(sessionStorage.getItem('exercise_analytics') || '[]');
+    const responseTime = Date.now() - questionStartTime;
     const isActuallyCorrect = option === currentTarget;
+    
+    const analytics = JSON.parse(sessionStorage.getItem('exercise_analytics') || '[]');
     analytics.push({
       target: currentTarget,
       attempt: option,
       level: recommendedLevel,
       type: 'Quiz',
-      isCorrect: isActuallyCorrect
+      isCorrect: isActuallyCorrect,
+      response_time_ms: responseTime
     });
     sessionStorage.setItem('exercise_analytics', JSON.stringify(analytics));
 
     if (isActuallyCorrect) {
       setIsCorrect(true);
+      
+      // Reset status DDS karena anak sudah menjawab dengan benar
+      setConsecutiveErrors(0);
+      setDdsActive(false);
+      setDdsAction(null);
+      setDdsMessage(null);
     } else {
       setIsCorrect(false);
+      
+      const newErrors = consecutiveErrors + 1;
+      setConsecutiveErrors(newErrors);
 
-     
+      // Simulasi peningkatan ketegangan otot/motorik anak saat menjawab salah (tremor tinggi, tekanan rendah, keraguan naik)
+      const currentTremor = parseFloat((0.55 + Math.random() * 0.25).toFixed(2));
+      const currentPressure = parseFloat((0.25 - Math.random() * 0.15).toFixed(2));
+      const currentHesitation = parseFloat((0.60 + Math.random() * 0.20).toFixed(2));
+      
+      setTelemetryTremor(currentTremor);
+      setTelemetryPressure(currentPressure);
+      setTelemetryHesitation(currentHesitation);
+
+      // Pemicu DDS
+      const isHesitant = responseTime > 7000 || currentHesitation > 0.6;
+      const isFatigued = currentTremor > 0.6 || currentPressure < 0.2 || currentPressure > 0.8;
+      const isFrustrated = newErrors >= 2;
+
+      if (isHesitant || isFatigued || isFrustrated) {
+        setDdsActive(true);
+        if (isFrustrated || isHesitant) {
+          setDdsAction("reduce_options");
+          setDdsMessage("Jangan khawatir! Kakak bantu menyederhanakan pilihan ganda ya.");
+          
+          // Reduksi pilihan ganda saat ini langsung
+          const distractors = currentOptions.filter(opt => opt !== currentTarget);
+          if (distractors.length > 0) {
+            const randomDistractor = distractors[Math.floor(Math.random() * distractors.length)];
+            const reduced = [currentTarget, randomDistractor].sort(() => Math.random() - 0.5);
+            setCurrentOptions(reduced);
+          }
+        } else {
+          setDdsAction("play_audio_hint");
+          setDdsMessage("Tanganmu lelah? Mari dengarkan suara petunjuk terlebih dahulu!");
+          playLetterSound(currentTarget);
+        }
+      }
+
       setWrongAttemptsMap(prev => {
         const currentCount = (prev[option] || 0) + 1;
         const newMap = { ...prev, [option]: currentCount };
-
 
         if (currentCount >= 3) {
           setHiddenOptions(prevHidden => [...prevHidden, option]);
         }
         return newMap;
       });
-
 
       const timeout = setTimeout(() => {
         setIsCorrect(null);
@@ -365,7 +463,58 @@ export default function Latihan() {
             <button className={styles.nextButtonPurple} onClick={handleStartQuiz}>
               Berikutnya
             </button>
+          </div>
+
+          <div className={styles.telemetryCard}>
+            <div className={styles.telemetryHeader}>
+              <div className={`${styles.telemetryStatusLight} ${(telemetryTremor > 0.6 || telemetryHesitation > 0.6 || telemetryPressure < 0.2 || telemetryPressure > 0.8 || ddsActive) ? styles.telemetryStatusDanger : ''}`}></div>
+              <span className={styles.telemetryTitle}>Smart Grip Telemetry (Simulasi)</span>
             </div>
+            <div className={styles.telemetryGrid}>
+              <div className={styles.telemetryItem}>
+                <span className={styles.telemetryLabel}>Tremor</span>
+                <span className={`${styles.telemetryValue} ${telemetryTremor > 0.6 ? styles.telemetryDanger : ''}`}>
+                  {telemetryTremor} {telemetryTremor > 0.6 ? '⚠' : '✓'}
+                </span>
+              </div>
+              <div className={styles.telemetryItem}>
+                <span className={styles.telemetryLabel}>Tekanan</span>
+                <span className={`${styles.telemetryValue} ${(telemetryPressure < 0.2 || telemetryPressure > 0.8) ? styles.telemetryDanger : ''}`}>
+                  {telemetryPressure} {(telemetryPressure < 0.2 || telemetryPressure > 0.8) ? '⚠' : '✓'}
+                </span>
+              </div>
+              <div className={styles.telemetryItem}>
+                <span className={styles.telemetryLabel}>Keraguan</span>
+                <span className={`${styles.telemetryValue} ${telemetryHesitation > 0.6 ? styles.telemetryDanger : ''}`}>
+                  {telemetryHesitation} {telemetryHesitation > 0.6 ? '⚠' : '✓'}
+                </span>
+              </div>
+              <div className={styles.telemetryItem}>
+                <span className={styles.telemetryLabel}>DDS Mode</span>
+                <span className={`${styles.telemetryValue} ${ddsActive ? styles.telemetryActive : ''}`}>
+                  {ddsActive ? 'AKTIF' : 'NORMAL'}
+                </span>
+              </div>
+            </div>
+            {ddsActive && ddsMessage && (
+              <div className={`${styles.ddsBanner} ${ddsAction === 'reduce_options' ? styles.ddsBannerReduce : styles.ddsBannerAudio}`}>
+                <div className={styles.ddsBannerIcon}>
+                  {ddsAction === 'reduce_options' ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 12C17.004 13.3308 16.4774 14.6024 15.54 15.54" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  )}
+                </div>
+                <span>{ddsMessage}</span>
+              </div>
+            )}
+          </div>
           </div>
         </div>
       </div>
@@ -458,6 +607,57 @@ export default function Latihan() {
               )}
             </div>
             )}
+
+            <div className={styles.telemetryCard}>
+              <div className={styles.telemetryHeader}>
+                <div className={`${styles.telemetryStatusLight} ${(telemetryTremor > 0.6 || telemetryHesitation > 0.6 || telemetryPressure < 0.2 || telemetryPressure > 0.8 || ddsActive) ? styles.telemetryStatusDanger : ''}`}></div>
+                <span className={styles.telemetryTitle}>Smart Grip Telemetry (Simulasi)</span>
+              </div>
+              <div className={styles.telemetryGrid}>
+                <div className={styles.telemetryItem}>
+                  <span className={styles.telemetryLabel}>Tremor</span>
+                  <span className={`${styles.telemetryValue} ${telemetryTremor > 0.6 ? styles.telemetryDanger : ''}`}>
+                    {telemetryTremor} {telemetryTremor > 0.6 ? '⚠' : '✓'}
+                  </span>
+                </div>
+                <div className={styles.telemetryItem}>
+                  <span className={styles.telemetryLabel}>Tekanan</span>
+                  <span className={`${styles.telemetryValue} ${(telemetryPressure < 0.2 || telemetryPressure > 0.8) ? styles.telemetryDanger : ''}`}>
+                    {telemetryPressure} {(telemetryPressure < 0.2 || telemetryPressure > 0.8) ? '⚠' : '✓'}
+                  </span>
+                </div>
+                <div className={styles.telemetryItem}>
+                  <span className={styles.telemetryLabel}>Keraguan</span>
+                  <span className={`${styles.telemetryValue} ${telemetryHesitation > 0.6 ? styles.telemetryDanger : ''}`}>
+                    {telemetryHesitation} {telemetryHesitation > 0.6 ? '⚠' : '✓'}
+                  </span>
+                </div>
+                <div className={styles.telemetryItem}>
+                  <span className={styles.telemetryLabel}>DDS Mode</span>
+                  <span className={`${styles.telemetryValue} ${ddsActive ? styles.telemetryActive : ''}`}>
+                    {ddsActive ? 'AKTIF' : 'NORMAL'}
+                  </span>
+                </div>
+              </div>
+              {ddsActive && ddsMessage && (
+                <div className={`${styles.ddsBanner} ${ddsAction === 'reduce_options' ? styles.ddsBannerReduce : styles.ddsBannerAudio}`}>
+                  <div className={styles.ddsBannerIcon}>
+                    {ddsAction === 'reduce_options' ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                        <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 12C17.004 13.3308 16.4774 14.6024 15.54 15.54" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span>{ddsMessage}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

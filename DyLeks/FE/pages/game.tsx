@@ -22,6 +22,13 @@ export default function Game() {
   const [mounted, setMounted] = useState(false);
   const [moves, setMoves] = useState(0);
 
+  // DDS Game States
+  const [ddsActive, setDdsActive] = useState(false);
+  const [consecutiveFails, setConsecutiveFails] = useState(0);
+  const [telemetryTremor, setTelemetryTremor] = useState(0.22);
+  const [telemetryPressure, setTelemetryPressure] = useState(0.53);
+  const [telemetryHesitation, setTelemetryHesitation] = useState(0.12);
+
   useEffect(() => {
     setMounted(true);
     // Auto-load level dari hasil screening jika ada
@@ -38,12 +45,16 @@ export default function Game() {
     }
   }, [selectedLevel]);
 
-  const initializeGame = (level: number) => {
+  const initializeGame = (level: number, forceDds = false) => {
     const levelData = WORD_BANK[level] || WORD_BANK[1];
-    // Ambil 4 kata acak dari level ini untuk dijadikan pasangan kartu
+    const isDdsMode = forceDds || ddsActive;
+    
+    // Jika DDS aktif (anak kebingungan/lelah), kurangi dari 4 pasang ke 2 pasang kartu
+    const pairsCount = isDdsMode ? 2 : 4;
+    
     const pool = [...levelData.targets]
       .sort(() => Math.random() - 0.5)
-      .slice(0, 4)
+      .slice(0, pairsCount)
       .map(w => w.target);
 
     const deck = [...pool, ...pool]
@@ -61,6 +72,11 @@ export default function Game() {
     setShowReward(false);
     setScore(0);
     setMoves(0);
+
+    // Simulasi telemetri grip sensor di game
+    setTelemetryTremor(isDdsMode ? 0.48 : 0.22);
+    setTelemetryPressure(isDdsMode ? 0.38 : 0.53);
+    setTelemetryHesitation(isDdsMode ? 0.35 : 0.12);
   };
 
   const playSound = (text: string) => {
