@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 # Load all models explicitly before creating tables
 # URUTAN IMPORT PENTING: User harus di-load sebelum ChildProfile
 # karena ChildProfile memiliki ForeignKey ke tabel users.
-from app.models import user, child_profile, exercise, screening_session
+from app.models import user, child_profile, exercise, screening_session, qr_token
 
 # Inisialisasi Database: Membuat semua tabel yang belum ada
 # (termasuk tabel 'users' yang baru ditambahkan)

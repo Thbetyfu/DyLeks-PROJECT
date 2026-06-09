@@ -18,14 +18,21 @@ from typing import Optional
 from app.core.database import get_db
 from app.models.user import User
 from app.models.child_profile import ChildProfile
+from app.models.qr_token import QRConnectToken
 from app.schemas.user_schema import (
     UserCreate, UserLogin, UserResponse,
     ChildProfileCreate, ChildProfileResponse
+)
+from app.schemas.qr_schema import (
+    QRTokenCreate, QRTokenResponse,
+    StudentConnectRequest, StudentConnectResponse
 )
 from app.services.auth_service import (
     hash_password, verify_password,
     create_session_token, decode_session_token
 )
+import secrets
+from datetime import datetime, timezone, timedelta
 
 router = APIRouter()
 
@@ -233,3 +240,180 @@ def delete_child_profile(
 
     db.delete(child)
     db.commit()
+
+
+# ============================================================
+# QR CODE CONNECTION ENDPOINTS (Laptop-to-Mobile Setup)
+# ============================================================
+
+@router.post("/qr/generate", response_model=QRTokenResponse)
+def generate_qr_token(
+    payload: QRTokenCreate,
+    db: Session = Depends(get_db),
+    current_teacher: User = Depends(get_current_teacher)
+):
+    """
+    Membuat token sekali pakai untuk penyambungan PWA siswa.
+    Token ini valid selama 5 menit.
+    """
+    token_str = secrets.token_urlsafe(16)
+    
+    # Nonaktifkan token lama dari guru ini untuk merapikan database (clean-up)
+    db.query(QRConnectToken).filter(
+        QRConnectToken.teacher_id == current_teacher.id,
+        QRConnectToken.status == "pending"
+    ).update({"status": "expired"})
+    
+    new_qr = QRConnectToken(
+        token=token_str,
+        teacher_id=current_teacher.id,
+        child_id=payload.child_id,
+        status="pending",
+        expired_at=datetime.utcnow() + timedelta(minutes=5)
+    )
+    db.add(new_qr)
+    db.commit()
+    db.refresh(new_qr)
+    
+    return {
+        "token": new_qr.token,
+        "status": new_qr.status,
+        "expired_at": new_qr.expired_at
+    }
+
+
+@router.get("/qr/status/{token}")
+def check_qr_token_status(
+    token: str,
+    db: Session = Depends(get_db),
+    current_teacher: User = Depends(get_current_teacher)
+):
+    """
+    Mengecek status token (pending/used/expired).
+    Dipanggil secara berkala (polling) oleh Dashboard Guru.
+    """
+    qr_record = db.query(QRConnectToken).filter(
+        QRConnectToken.token == token,
+        QRConnectToken.teacher_id == current_teacher.id
+    ).first()
+    
+    if not qr_record:
+        raise HTTPException(status_code=404, detail="Token tidak ditemukan.")
+        
+    # Cek expired secara pasif jika statusnya pending
+    if qr_record.status == "pending" and datetime.utcnow() > qr_record.expired_at:
+        qr_record.status = "expired"
+        db.commit()
+        db.refresh(qr_record)
+        
+    # Ambil info anak jika sudah diasosiasikan
+    child_name = ""
+    if qr_record.child_id:
+        child = db.query(ChildProfile).filter(ChildProfile.id == qr_record.child_id).first()
+        if child:
+            child_name = child.name
+            
+    return {
+        "status": qr_record.status,
+        "child_id": qr_record.child_id,
+        "child_name": child_name
+    }
+
+
+@router.post("/qr/connect", response_model=StudentConnectResponse)
+def connect_student_device(payload: StudentConnectRequest, db: Session = Depends(get_db)):
+    """
+    Dipanggil oleh HP siswa (PWA) setelah memindai QR code.
+    Menghubungkan perangkat siswa, mengembalikan JWT/session token akses.
+    """
+    qr_record = db.query(QRConnectToken).filter(
+        QRConnectToken.token == payload.token
+    ).first()
+    
+    if not qr_record:
+        raise HTTPException(status_code=404, detail="Token QR tidak valid.")
+        
+    if qr_record.status != "pending" or datetime.utcnow() > qr_record.expired_at:
+        if qr_record.status == "pending":
+            qr_record.status = "expired"
+            db.commit()
+        raise HTTPException(status_code=400, detail="Token QR sudah kedaluwarsa atau telah digunakan.")
+        
+    # Tentukan child_id (bisa dikirim dari HP siswa atau dari default token)
+    target_child_id = payload.child_id or qr_record.child_id
+    if not target_child_id:
+        raise HTTPException(status_code=400, detail="Profil siswa tidak teridentifikasi. Harap tentukan siswa.")
+        
+    child = db.query(ChildProfile).filter(
+        ChildProfile.id == target_child_id,
+        ChildProfile.teacher_id == qr_record.teacher_id
+    ).first()
+    
+    if not child:
+        raise HTTPException(status_code=404, detail="Profil siswa tidak ditemukan di bawah guru ini.")
+        
+    # Sukses: Tandai token sebagai used
+    qr_record.status = "used"
+    qr_record.child_id = target_child_id
+    db.commit()
+    
+    # Terbitkan token otorisasi siswa menggunakan token guru sebagai basis delegasi
+    student_access_token = create_session_token(qr_record.teacher_id)
+    
+    return {
+        "status": "success",
+        "access_token": student_access_token,
+        "child_name": child.name
+    }
+
+
+@router.get("/qr/info/{token}")
+def get_qr_token_info(token: str, db: Session = Depends(get_db)):
+    """
+    Public endpoint untuk dipanggil oleh HP siswa (PWA).
+    Mengambil info token, status, profil anak yang dikaitkan,
+    atau daftar profil anak milik guru yang membuat token jika belum dikaitkan.
+    """
+    qr_record = db.query(QRConnectToken).filter(
+        QRConnectToken.token == token
+    ).first()
+    
+    if not qr_record:
+        raise HTTPException(status_code=404, detail="Token QR tidak ditemukan.")
+        
+    # Cek expired secara pasif
+    if qr_record.status == "pending" and datetime.utcnow() > qr_record.expired_at:
+        qr_record.status = "expired"
+        db.commit()
+        db.refresh(qr_record)
+        
+    child_name = ""
+    children_list = []
+    
+    if qr_record.child_id:
+        child = db.query(ChildProfile).filter(ChildProfile.id == qr_record.child_id).first()
+        if child:
+            child_name = child.name
+    else:
+        # Ambil daftar semua anak milik guru pembuat token agar anak bisa memilih namanya di HP
+        children = db.query(ChildProfile).filter(
+            ChildProfile.teacher_id == qr_record.teacher_id
+        ).all()
+        children_list = [{"id": c.id, "name": c.name} for c in children]
+        
+    # Cari nama guru/sekolah untuk konfirmasi visual di HP siswa
+    teacher = db.query(User).filter(User.id == qr_record.teacher_id).first()
+    school_name = teacher.school_name if teacher else "Sekolah Luring"
+    teacher_name = teacher.full_name if teacher else "Guru"
+    
+    return {
+        "status": qr_record.status,
+        "child_id": qr_record.child_id,
+        "child_name": child_name,
+        "school_name": school_name,
+        "teacher_name": teacher_name,
+        "children": children_list,
+        "is_expired": qr_record.status == "expired" or datetime.utcnow() > qr_record.expired_at
+    }
+
+
