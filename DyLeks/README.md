@@ -316,7 +316,41 @@ DyLeks menggunakan 4 strategi cache berbeda di Service Worker (`FE/public/sw.js`
 
 ---
 
-## 10. Langkah Memulai Pengembangan (Local Development Guide)
+## 10. Alur Operasional Kelas Luring (Classroom Workflow)
+
+Untuk memaksimalkan penggunaan DyLeks di daerah 3T yang serba luring (tanpa internet), ikuti protokol operasional kelas terstruktur berikut dari awal guru masuk kelas hingga pembelajaran selesai:
+
+### Tahap 1: Persiapan Kelas (5 Menit Sebelum Pembelajaran)
+1. **Nyalakan Hotspot Lokal:** Guru menyalakan router Wi-Fi kelas luring (atau mengaktifkan hotspot pribadi dari smartphone guru tanpa kuota data).
+2. **Koneksikan Perangkat:** Hubungkan laptop guru (Server) ke jaringan Wi-Fi lokal kelas tersebut.
+3. **Nyalakan Server Hub DyLeks:** Guru menjalankan skrip `setup_services.bat` (atau menjalankan manual Next.js & FastAPI luring).
+4. **Buka Dashboard:** Guru membuka peramban laptop dan mengakses `http://localhost:3001/dashboard`, lalu masuk menggunakan kredensial guru.
+
+### Tahap 2: Sambungan Mandiri Siswa (5 Menit Pertama Kelas)
+1. **Hubungkan Wi-Fi Siswa:** Anak-anak menyalakan Wi-Fi pada smartphone masing-masing dan menyambungkannya ke Wi-Fi kelas luring yang sama.
+2. **Pindai QR Code:**
+   - Guru membuka modal **"Hubungkan Siswa (QR)"** di Dashboard Guru.
+   - Anak-anak membuka PWA DyLeks di HP mereka dan mengklik tombol pemindai untuk memindai QR Code di layar laptop guru.
+   - HP siswa secara otomatis mendeteksi alamat IP server lokal guru dan menyetelnya secara asinkron tanpa input manual.
+   - Anak memilih profil namanya pada layar HP untuk terhubung secara instan.
+3. **Otomatisasi Antrean:** Begitu anak A terhubung, laptop guru memutar bunyi bel sukses luring ("ting-ting") dan otomatis meregenerasi QR Code baru dalam 3 detik untuk dipindai oleh siswa berikutnya hingga seluruh kelas terhubung.
+
+### Tahap 3: Aktivitas Belajar Luring & Pemantauan (30 Menit Inti Pembelajaran)
+1. **Mulai Belajar Adaptif:** Anak-anak mulai mengerjakan soal latihan di HP masing-masing atau bermain game pencarian kata (Memory Card) luring.
+2. **Pemantauan Kognitif Aktif (DDS):** 
+   - Selama anak belajar, laptop guru secara asinkron memantau waktu respons dan telemetri tremor grip pensil anak.
+   - Jika anak mengalami kebingungan (salah $\ge 2$ kali berturut-turut) atau kelelahan motorik, backend menginstruksikan HP siswa untuk otomatis mengaktifkan mode DDS (mengurangi pilihan ganda dari 4 menjadi 2 opsi atau memutar panduan suara).
+3. **Skrining Tulisan Tangan:** Untuk latihan motorik menulis fisik, anak menulis di kertas biasa, kemudian guru mengambil foto tulisan anak menggunakan kamera HP, lalu mengunggahnya ke server laptop guru untuk dianalisis luring oleh model AI Vision.
+
+### Tahap 4: Evaluasi & Penutupan Kelas (5 Menit Terakhir Kelas)
+1. **Sesi Latihan Berakhir:** Siswa menyelesaikan pembelajaran harian mereka. Seluruh data skor dan jenis kesalahan tersimpan rapi secara lokal di database SQLite laptop guru.
+2. **Review Dashboard Guru:** Guru membuka panel detail siswa di Dashboard Guru laptop untuk meninjau jenis kesalahan anak hari itu (misal: "sering membalik huruf b/d").
+3. **Catatan Pedagogis Orton-Gillingham:** Guru langsung menuliskan catatan evaluasi intervensi (seperti: *"rekomendasi latihan taktil menulis huruf b/d di atas pasir di kelas esok hari"*). Catatan ini tersimpan secara terenkripsi transparan di database demi keamanan privasi anak.
+4. **Shutdown Server:** Guru mematikan server lokal dan router Wi-Fi. Kelas ditutup dengan aman.
+
+---
+
+## 11. Langkah Memulai Pengembangan (Local Development Guide)
 
 ### Prasyarat Infrastruktur Kelas 3T (Simulasi)
 
@@ -358,7 +392,7 @@ Klik **"Add to Home Screen"** di browser untuk menginstall sebagai PWA offline.
 
 ---
 
-## 11. Flowchart Diagram Alur Sistem
+## 12. Flowchart Diagram Alur Sistem
 
 ```mermaid
 flowchart TD
@@ -391,7 +425,7 @@ flowchart TD
 
 ---
 
-## 12. Riset Pengguna & Validasi Lapangan (Pilot Project)
+## 13. Riset Pengguna & Validasi Lapangan (Pilot Project)
 
 Pengembangan **DyLeks** dilandasi oleh riset kualitatif mendalam terhadap pengguna riil di sekolah dasar pelosok:
 
@@ -401,7 +435,7 @@ Pengembangan **DyLeks** dilandasi oleh riset kualitatif mendalam terhadap penggu
 
 ---
 
-## 13. Arsitektur Deployment Luring (Penyelesaian Mixed Content)
+## 14. Arsitektur Deployment Luring (Penyelesaian Mixed Content)
 
 Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan keamanan peramban web modern, DyLeks menerapkan strategi *deployment* sebagai berikut:
 
@@ -423,7 +457,7 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 
 ---
 
-## 14. Status Sprint & Roadmap
+## 15. Status Sprint & Roadmap
 
 | Sprint | Fokus | Status |
 |---|---|---|
@@ -438,7 +472,7 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 
 ---
 
-## 15. Success Metrics
+## 16. Success Metrics
 
 | Metric | Target | Keterangan |
 |---|---|---|
