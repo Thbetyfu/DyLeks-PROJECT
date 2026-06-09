@@ -4,8 +4,8 @@
 
 **Ekosistem Edge-AI Offline, PWA Responsif Multi-Device, dan Sensor Fusion IoT untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
 
-> **Versi Dokumentasi:** 2.1 (Diperbarui 9 Juni 2026)
-> **Status Pengembangan:** Aktif — Fase 2 (Frontend & AI Services)
+> **Versi Dokumentasi:** 2.2 (Diperbarui 10 Juni 2026)  
+> **Status Pengembangan:** Aktif — Fase 2.5 (Dynamic Difficulty Scaling & Telemetry Services)
 
 ---
 
@@ -42,14 +42,15 @@ Sistem dioptimasi secara arsitektural agar mampu berjalan lancar pada perangkat 
 | --- | --- | --- |
 | **Frontend Client** | **Next.js 16 + PWA (next-pwa)** | UI/UX responsif; Service Worker offline aktif |
 | **Backend Server** | **FastAPI (Python 3.9+)** | REST API berjalan di port 3002 |
-| **AI OCR Engine** | **TrOCR + ONNX Web** | Fallback offline jika Ollama tidak tersedia |
-| **Vision AI (Primary)** | **Ollama Vision (LLaVA/Phi-3)** | Engine utama analisis tulisan tangan, 100% offline |
+| **AI OCR Engine** | **TrOCR (ONNX Runtime)** | Fallback offline dengan ONNX Runtime di backend |
+| **Vision AI (Primary)** | **Ollama Vision (LLaVA/Moondream)** | Engine utama analisis tulisan tangan, adaptif terhadap spesifikasi RAM server |
 | **Fuzzy Matching** | **RapidFuzz 3.10** | Deteksi pola disleksia: reversal b/d, omission, insertion, transposition |
 | **Audio Scaffolding** | **Python gTTS + File MP3** | 5 file audio luring tersedia di `/public/assets/audio/` |
 | **Local Database** | **SQLite (via SQLAlchemy 2.0)** | Skema relasional; Mode WAL & Synchronous NORMAL aktif untuk konkurensi tinggi |
 | **Auth** | **Bcrypt + HMAC-SHA256 Token** | Isolasi data antar guru tanpa JWT overhead |
 | **Offline Sync** | **Service Worker + IndexedDB** | Background Sync untuk antrian submit foto saat koneksi terputus |
-| **IoT (Direncanakan)** | **ESP32 + MPU6050 + MQTT** | Smart Writing Grip — belum diimplementasikan |
+| **DDS & Telemetry** | **Adaptive Dynamic Difficulty Scaling** | Deteksi frustrasi kognitif & tremor motorik sensorik real-time |
+| **IoT (Direncanakan)** | **ESP32 + MPU6050 + MQTT** | Smart Writing Grip terintegrasi dengan DDS backend & FE telemetry |
 
 ---
 
@@ -84,20 +85,29 @@ Kurikulum 5 level berbasis Orton-Gillingham tersimpan sebagai *Single Source of 
 * Sistem eliminasi opsi salah setelah 3x percobaan gagal.
 * Progress sesi dan streak tersimpan di `sessionStorage`.
 
-### D. Skrining Tulisan Tangan (`FE/pages/screening.tsx`)
+### D. Gamifikasi Cerdas: Adaptive Dynamic Difficulty Scaling (DDS)
+
+Anak disleksia memiliki tingkat frustrasi kognitif yang tinggi jika diberi tantangan yang terlalu rumit, tetapi mudah kehilangan fokus jika materi terlalu monoton. DDS hadir untuk mengatasi ini:
+* **Pemantauan Real-Time:** Sistem memantau respons waktu pengetikan/jawaban, keakuratan jawaban (kesalahan beruntun / consecutive errors >= 2), serta anomali pergerakan sensor grip secara real-time.
+* **Tindakan Penurunan Kompleksitas (Scaffolding):**
+  * `reduce_options`: Mengurangi opsi pilihan ganda menjadi hanya 2 pilihan (jawaban benar + 1 pengecoh acak) disertai dengan Banner Oranye di frontend (*"Jangan khawatir! Kakak bantu menyederhanakan pilihan ganda ya."*).
+  * `play_audio_hint`: Memutar stimulus audio tambahan secara otomatis disertai dengan Banner Biru di frontend (*"Tanganmu lelah? Mari dengarkan suara petunjuk terlebih dahulu!"*).
+* **Live Telemetry Widget & Status Indicator:** Pojok kanan layar Latihan menampilkan visualisasi status telemetri sensor grip (tremor, pressure, hesitation). Lampu status berubah menjadi MERAH berdenyut cepat (Danger State) saat terdeteksi tremor/ketidakstabilan grip motorik halus anak (> 0.6), dan kembali HIJAU saat normal.
+
+### E. Skrining Tulisan Tangan (`FE/pages/screening.tsx`)
 
 * Dual-Engine AI: Ollama Vision (primary) → TrOCR Transformer (fallback offline).
 * Capture foto via kamera smartphone, kirim ke backend `POST /api/v1/screening/upload`.
 * Output: skor risiko (0-100), label risiko, level rekomendasi, dan daftar pola kesalahan terdeteksi.
 
-### E. Halaman Hasil & Analisis Pola (`FE/pages/result.tsx`)
+### F. Halaman Hasil & Analisis Pola (`FE/pages/result.tsx`)
 
 * Grafik SVG distribusi frekuensi pola kesalahan (Inversi b/d, Transposisi, Omission/Insertion, Inversi p/q).
 * Menampilkan detail per kata: benar/salah, error message dari backend.
 * Indikasi awal berdasarkan pola error dengan disclaimer klinis.
 * Rekomendasi tindak lanjut adaptif berdasarkan skor.
 
-### F. Teacher's Offline AI Copilot (`FE/pages/copilot.tsx`)
+### G. Teacher's Offline AI Copilot (`FE/pages/copilot.tsx`)
 
 * Antarmuka chat 100% offline dengan model bahasa kecil (Ollama lokal).
 * Guru dapat bertanya rekomendasi intervensi berdasarkan pola error anak.
@@ -113,29 +123,33 @@ DyLeks/
 ├── BE/                                    # Python FastAPI Backend (port 3002)
 │   ├── app/
 │   │   ├── api/v1/
-│   │   │   ├── auth.py                    # [BARU] Register, Login, CRUD ChildProfile
+│   │   │   ├── auth.py                    # Register, Login, CRUD ChildProfile
 │   │   │   ├── screening.py               # Endpoint analisis tulisan tangan (Dual-Engine)
-│   │   │   ├── learning.py                # Endpoint mesin belajar adaptif
-│   │   │   └── chat.py                    # Endpoint AI Copilot guru luring
+│   │   │   ├── learning.py                # Endpoint mesin belajar adaptif & submit answer DDS
+│   │   │   ├── chat.py                    # Endpoint AI Copilot guru luring
+│   │   │   └── sync.py                    # Endpoint sinkronisasi batch sesi luring (Offline Sync)
 │   │   ├── services/
-│   │   │   ├── auth_service.py            # [BARU] Bcrypt hashing + HMAC session token
-│   │   │   ├── fuzzy_matching.py          # [BARU] DyslexiaFuzzyMatcher engine
-│   │   │   ├── scoring_service.py         # [DIPERBARUI] Wrapper ke DyslexiaFuzzyMatcher
-│   │   │   ├── adaptive_engine.py         # Spaced Repetition + Orton-Gillingham logic
+│   │   │   ├── auth_service.py            # Bcrypt hashing + HMAC session token
+│   │   │   ├── fuzzy_matching.py          # DyslexiaFuzzyMatcher engine
+│   │   │   ├── scoring_service.py         # Wrapper ke DyslexiaFuzzyMatcher
+│   │   │   ├── adaptive_engine.py         # Spaced Repetition + DDS kognitif/telemetri logic
 │   │   │   ├── image_processor.py         # Preprocessing gambar: deskew, OTSU, resize
 │   │   │   ├── ollama_service.py          # Chat copilot via Ollama lokal
 │   │   │   ├── ollama_vision_service.py   # Analisis gambar via Ollama Vision (LLaVA)
 │   │   │   ├── trocr_service.py           # ONNX Runtime fallback OCR
-│   │   │   └── ocr_service.py            # Abstraksi utilitas OCR
+│   │   │   ├── ocr_service.py             # Abstraksi utilitas OCR
+│   │   │   ├── hardware_diagnostic.py     # Diagnosa RAM/CPU/GPU untuk alokasi model dinamis luring
+│   │   │   └── rag_service.py             # RAG semantik di memori (Cosine Similarity) berbasis file JSON
 │   │   ├── models/
-│   │   │   ├── user.py                    # [DIPERBARUI] Model User (Guru) SQLAlchemy lengkap
-│   │   │   ├── child_profile.py           # [DIPERBARUI] ChildProfile + teacher_id FK + gender/grade
+│   │   │   ├── user.py                    # Model User (Guru) SQLAlchemy lengkap
+│   │   │   ├── child_profile.py           # ChildProfile + teacher_id FK + gender/grade
 │   │   │   ├── screening_session.py       # Sesi skrining dengan FK ke child_profiles
 │   │   │   └── exercise.py                # Bank soal, LearningSession, ExerciseResponse
 │   │   ├── schemas/
-│   │   │   ├── user_schema.py             # [DIPERBARUI] Pydantic: UserCreate/Login/Response + ChildProfile
+│   │   │   ├── user_schema.py             # Pydantic: UserCreate/Login/Response + ChildProfile
 │   │   │   ├── screening_schema.py        # ScreeningRequest + ScreeningResponse
-│   │   │   ├── exercise_schema.py         # Schema latihan
+│   │   │   ├── exercise_schema.py         # SubmitAnswerRequest/Response dengan metadata DDS & session_id
+│   │   │   ├── sync_schema.py             # Schema untuk sinkronisasi batch offline
 │   │   │   └── chat_schema.py             # Schema AI chat
 │   │   └── core/
 │   │       └── database.py                # SQLAlchemy engine (SQLite offline)
@@ -148,7 +162,7 @@ DyLeks/
 │   │   ├── _app.tsx                       # Entry point: ThemeProvider + Poppins font
 │   │   ├── index.tsx                      # Dashboard utama DyLeks
 │   │   ├── screening.tsx                  # Ambil foto tulisan & Dual-Engine AI
-│   │   ├── latihan.tsx                    # Adaptive Listen Card + Quiz + Writing
+│   │   ├── latihan.tsx                    # Adaptive Listen Card + Quiz + Writing (dengan telemetri DDS)
 │   │   ├── game.tsx                       # Memory Card Matching per level
 │   │   ├── result.tsx                     # Visualisasi pola kesalahan + rekomendasi
 │   │   ├── summary.tsx                    # Ringkasan sesi
@@ -158,11 +172,12 @@ DyLeks/
 │   │   ├── ButterflyMascot.tsx            # Maskot kupu-kupu (light mode)
 │   │   └── ThemeToggle.tsx                # Toggle dark/light mode
 │   ├── lib/
-│   │   └── wordBank.ts                    # [KUNCI] Single Source of Truth kurikulum 5-level
+│   │   ├── sync_service.ts                # Sinkronisasi IndexedDB/localStorage ke server FastAPI luring
+│   │   └── wordBank.ts                    # Single Source of Truth kurikulum 5-level
 │   ├── styles/                            # CSS Modules per halaman + globals.css
 │   ├── public/
-│   │   ├── manifest.json                  # [BARU] PWA manifest (install prompt)
-│   │   ├── sw.js                          # [BARU] Custom Service Worker (4 strategi cache)
+│   │   ├── manifest.json                  # PWA manifest (install prompt)
+│   │   ├── sw.js                          # Custom Service Worker (4 strategi cache)
 │   │   └── assets/
 │   │       ├── audio/                     # 5 file MP3 luring (A, BA, BAN, NYALA, MENEMANI)
 │   │       ├── fonts/
@@ -217,7 +232,7 @@ learning_sessions & exercise_responses
 
 ---
 
-## 7. API Endpoints (Backend v1.2.0)
+## 7. API Endpoints (Backend v1.3.0)
 
 ### Auth & User Management (`/api/v1/auth`)
 | Method | Endpoint | Fungsi |
@@ -238,12 +253,18 @@ learning_sessions & exercise_responses
 ### Learning (`/api/v1/learning`)
 | Method | Endpoint | Fungsi |
 |---|---|---|
-| GET | `/questions` | Ambil soal adaptif (Spaced Repetition) |
+| GET | `/get-exercises/{level}` | Ambil soal adaptif (Spaced Repetition) |
+| POST | `/submit-answer` | Submit jawaban kognitif & parameter sensor grip (DDS) |
+
+### Offline Sync (`/api/v1/sync`)
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/batch` | Kirim batch antrean sesi offline dari PWA client untuk diproses secara paralel |
 
 ### AI Copilot (`/api/v1/chat`)
 | Method | Endpoint | Fungsi |
 |---|---|---|
-| POST | `/` | Chat dengan Ollama SLM lokal |
+| POST | `/` | Chat dengan Ollama SLM lokal (terintegrasi RAG semantik luring) |
 
 ---
 
@@ -307,6 +328,7 @@ DyLeks menggunakan 4 strategi cache berbeda di Service Worker (`FE/public/sw.js`
 ```bash
 cd BE
 pip install -r requirements.txt
+python -m app.services.hardware_diagnostic  # Opsional: jalankan cek spesifikasi luring
 uvicorn app.main:app --host 0.0.0.0 --port 3002 --reload
 ```
 
@@ -351,15 +373,20 @@ flowchart TD
 
     C -->|Latihan| J["Audio Listen Card diputar (MP3 luring)"]
     J --> K["Anak pilih jawaban dari opsi / tulis di kertas"]
-    K --> L["Feedback visual + level adaptif"]
-    L --> M["Adaptive Engine susun soal berikutnya (Spaced Repetition)"]
+    K --> L["Telemetry Sensor Grip dimonitor secara real-time"]
+    L --> M{"DDS Terpicu (Salah >= 2x atau tremor/fatigue)?"}
+    M -->|Ya| N["DDS Aktif: Kurangi opsi ke 2 (Oranye) ATAU putar petunjuk audio (Biru)"]
+    M -->|Tidak| O["Lanjut alur normal (Spaced Repetition)"]
+    N --> P["Feedback visual + simpan respons"]
+    O --> P
+    P --> Q["Adaptive Engine susun soal berikutnya"]
 
-    C -->|Game| N["Memory Card Matching per level"]
-    N --> O["Poin, langkah, dan streak diperbarui"]
-    O --> P["Progress anak disimpan ke sessionStorage"]
+    C -->|Game| R["Memory Card Matching per level"]
+    R --> S["Poin, langkah, dan streak diperbarui"]
+    S --> T["Progress anak disimpan ke sessionStorage"]
 
-    H --> Q["Optional: Copilot guru beri rekomendasi OG offline"]
-    Q --> H
+    H --> U["Optional: Copilot guru beri rekomendasi OG offline"]
+    U --> H
 ```
 
 ---
@@ -406,6 +433,7 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 | **Sprint 3** | Game Memory Card, Halaman Result visualisasi, UI/UX refinement | Selesai |
 | **Sprint 3.5** | Auth Guru (bcrypt + HMAC token), DyslexiaFuzzyMatcher engine, PWA Service Worker, Pilar 1 (Risk Assessment Engine SQLite), Pilar 2 (Offline PWA Sync Batch Queue) | **Selesai** |
 | **Sprint 3.6** | Peningkatan Stabilitas Edge Server (Auto-Start Script, SQLite WAL Mode, Local DNS Setup & Docs) | **Selesai** |
+| **Sprint 3.7** | Gamifikasi Cerdas Adaptive Dynamic Difficulty Scaling (DDS) & Telemetri Sensor Grip Real-Time | **Selesai** |
 | **Sprint 4** | IoT Smart Writing Grip (ESP32 + MPU6050 + MQTT) | Belum dimulai (tunggu hardware) |
 
 ---
@@ -425,6 +453,6 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 
 ---
 
-**Terakhir Diperbarui:** 9 Juni 2026
-**Versi Dokumen:** 2.1 (Pilar 3 — Stabilitas Edge Server & SQLite WAL Mode)
-**Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)
+**Terakhir Diperbarui:** 10 Juni 2026  
+**Versi Dokumen:** 2.2 (Pilar 4 — Adaptive DDS & Telemetry)  
+**Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)  
