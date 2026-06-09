@@ -37,8 +37,8 @@ class CopilotService:
             "tanpa alat khusus."
         )
 
-    def _build_prompt(self, message: str, context: Optional[dict] = None) -> str:
-        """Membangun prompt lengkap dengan context skrining anak jika tersedia."""
+    def _build_prompt(self, message: str, context: Optional[dict] = None, rag_docs: Optional[list] = None) -> str:
+        """Membangun prompt lengkap dengan context skrining anak dan rujukan RAG jika tersedia."""
         context_block = ""
         if context:
             child_name = context.get("child_name") or "siswa"
@@ -54,13 +54,34 @@ class CopilotService:
                 f"- Pola kesalahan terdeteksi: {error_str}\n"
             )
 
-        return f"{self.system_prompt}{context_block}\n\nGuru: {message}\nDyLeks Copilot:"
+        rag_block = ""
+        if rag_docs:
+            rag_block = "\n\n[REFERENSI PEDAGOGIS ILMIAH (RUJUKAN UTAMA)]:\n"
+            for i, doc in enumerate(rag_docs, 1):
+                rag_block += f"{i}. {doc['title']}: {doc['content']}\n"
+            rag_block += (
+                "\n*PENTING*: Susunlah rekomendasi pengajaran Anda dengan berakar kuat dari rujukan "
+                "ilmiah multisensori di atas agar akurat dan terpercaya bagi guru."
+            )
+
+        return f"{self.system_prompt}{context_block}{rag_block}\n\nGuru: {message}\nDyLeks Copilot:"
 
     async def get_reply(self, message: str, context: Optional[dict] = None) -> str:
         """
-        Kirim pertanyaan guru ke Ollama.
+        Kirim pertanyaan guru ke Ollama dengan dukungan Local RAG.
         """
-        full_prompt = self._build_prompt(message, context)
+        from app.services.rag_service import rag_service
+
+        rag_docs = []
+        try:
+            # Cari rujukan ilmiah yang relevan dari kueri guru
+            rag_docs = await rag_service.search(message, top_k=2, min_score=0.35)
+            if rag_docs:
+                print(f"[Copilot] RAG menyisipkan {len(rag_docs)} dokumen rujukan untuk kueri: '{message}'")
+        except Exception as rag_err:
+            print(f"[Copilot] Gagal memuat rujukan RAG: {rag_err}")
+
+        full_prompt = self._build_prompt(message, context, rag_docs)
 
         # --- Ollama Lokal ---
         try:

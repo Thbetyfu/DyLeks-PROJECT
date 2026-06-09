@@ -7,6 +7,7 @@ import BatMascot from '../components/BatMascot';
 import ButterflyMascot from '../components/ButterflyMascot';
 import ThemeToggle from '../components/ThemeToggle';
 import { SCREENING_WORDS } from '../lib/wordBank';
+import { SyncService, OfflineSession, OfflineWordAttempt } from '../lib/sync_service';
 
 const letters = SCREENING_WORDS;
 
@@ -18,6 +19,7 @@ export default function ScreeningPage() {
   const [mode, setMode] = useState<'listening' | 'camera'>('listening');
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioFinished, setAudioFinished] = useState(false);
+  const [isOfflineSession, setIsOfflineSession] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const [sessionResults, setSessionResults] = useState<any[]>([]);
   
@@ -93,12 +95,18 @@ export default function ScreeningPage() {
 
     setIsCapturing(true);
     const canvas = document.createElement('canvas');
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
+    // Downscale untuk menghemat ruang LocalStorage saat offline (Pilar 2)
+    canvas.width = 400;
+    canvas.height = 400;
     const ctx = canvas.getContext('2d');
-    ctx?.drawImage(videoRef.current, 0, 0);
+    
+    // Crop center / fit image to 400x400
+    ctx?.drawImage(videoRef.current, 0, 0, 400, 400);
 
-    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+    const base64Image = canvas.toDataURL('image/jpeg', 0.6);
+
+    let resultData = null;
+    let isAttemptOffline = false;
 
     try {
       const response = await fetch('http://localhost:3002/api/v1/screening/upload', {
@@ -110,36 +118,153 @@ export default function ScreeningPage() {
         }),
       });
 
-      const data = await response.json();
-      
-      const updatedResults = [...sessionResults, { letter: currentLetter, result: data }];
-      setSessionResults(updatedResults);
-
-      if (currentIndex < letters.length - 1) {
-        stopCamera();
-        setCurrentIndex(prev => prev + 1);
-        setMode('listening');
-        setAudioFinished(false);
+      if (response.ok) {
+        resultData = await response.json();
       } else {
-        stopCamera();
-        sessionStorage.setItem('dyslexia_screening_results', JSON.stringify(updatedResults));
+        isAttemptOffline = true;
+      }
+    } catch (error) {
+      console.warn("Upload failed, switching to offline mode:", error);
+      isAttemptOffline = true;
+    }
 
-        // Simpan ringkasan hasil terakhir (dipakai latihan.tsx & Copilot)
-        const lastResult = data;
+    if (isAttemptOffline) {
+      setIsOfflineSession(true);
+      resultData = {
+        status: "offline",
+        risk_score: -1,
+        risk_level: "Luring",
+        recommended_level: 1,
+        feedback: "Gambar tulisan disimpan secara lokal. Hubungkan ke Wi-Fi guru untuk sinkronisasi.",
+        detected_errors: ["Luring (menunggu sinkronisasi)"]
+      };
+    }
+
+    const updatedResults = [...sessionResults, { letter: currentLetter, image_base64: base64Image, result: resultData }];
+    setSessionResults(updatedResults);
+
+    if (currentIndex < letters.length - 1) {
+      stopCamera();
+      setCurrentIndex(prev => prev + 1);
+      setMode('listening');
+      setAudioFinished(false);
+    } else {
+      stopCamera();
+
+      // Hapus data base64 sebelum menyimpan ke sessionStorage untuk efisiensi
+      const storageResults = updatedResults.map(r => ({
+        letter: r.letter,
+        result: r.result
+      }));
+      sessionStorage.setItem('dyslexia_screening_results', JSON.stringify(storageResults));
+
+      if (isOfflineSession || isAttemptOffline) {
+        // Mode Luring: Simpan sesi lengkap ke antrean LocalStorage
+        const childId = sessionStorage.getItem('selected_child_id') || null;
+        const offlineSession: OfflineSession = {
+          id: Math.random().toString(36).substring(2, 11),
+          child_id: childId,
+          timestamp: new Date().toISOString(),
+          word_attempts: updatedResults.map(r => ({
+            target_letter: r.letter,
+            image_base64: r.image_base64
+          })),
+          synced: false
+        };
+
+        SyncService.addSessionToQueue(offlineSession);
+
         sessionStorage.setItem('dyslexia_result', JSON.stringify({
-          risk_score: lastResult.risk_score,
-          risk_level: lastResult.risk_level,
-          recommended_level: lastResult.recommended_level,
-          detected_errors: lastResult.detected_errors || [],
+          risk_score: -1,
+          risk_level: 'Luring',
+          recommended_level: 1,
+          detected_errors: ['Skrining luring tersimpan.'],
+          offline_session_id: offlineSession.id
         }));
 
         router.push('/summary');
+      } else {
+        // Mode Daring: Kirim data sesi agregat ke server
+        const childId = sessionStorage.getItem('selected_child_id') || null;
+        
+        // Hitung nilai agregat sesi di frontend
+        const total = updatedResults.length;
+        const avgScore = updatedResults.reduce((sum, r) => sum + r.result.risk_score, 0) / total;
+        
+        // Tentukan label risiko & rekomendasi level
+        let riskLabel = "Sangat Rendah";
+        let recLevel = 5;
+        if (avgScore >= 75) {
+          riskLabel = "Tinggi";
+          recLevel = 1;
+        } else if (avgScore >= 55) {
+          riskLabel = "Sedang-Tinggi";
+          recLevel = 2;
+        } else if (avgScore >= 35) {
+          riskLabel = "Sedang";
+          recLevel = 3;
+        } else if (avgScore >= 15) {
+          riskLabel = "Rendah";
+          recLevel = 4;
+        }
+
+        // Cari tipe error dominan dari list error per kata
+        const allErrors = updatedResults.flatMap(r => r.result.detected_errors || []);
+        let feedbackMsg = "Luar biasa! Latihan dapat dilanjutkan ke level berikutnya.";
+        if (riskLabel === "Tinggi") {
+          feedbackMsg = `Pola tulisan menunjukkan risiko tinggi. Disarankan mulai dari Level 1 secara visual.`;
+        } else if (riskLabel === "Sedang-Tinggi" || riskLabel === "Sedang") {
+          feedbackMsg = `Terdeteksi beberapa pola kesalahan. Level ${recLevel} direkomendasikan untuk memperkuat suku kata.`;
+        }
+
+        try {
+          const submitResponse = await fetch('http://localhost:3002/api/v1/screening/submit-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              child_id: childId,
+              risk_score: avgScore,
+              risk_level: riskLabel,
+              recommended_level: recLevel,
+              feedback: feedbackMsg
+            })
+          });
+
+          if (submitResponse.ok) {
+            const submitData = await submitResponse.json();
+            sessionStorage.setItem('dyslexia_result', JSON.stringify({
+              risk_score: submitData.risk_score,
+              risk_level: submitData.risk_level,
+              recommended_level: submitData.recommended_level,
+              detected_errors: allErrors,
+            }));
+          }
+        } catch (submitErr) {
+          console.error("Gagal submit sesi ke server, mengantrekan luring:", submitErr);
+          // Jika submit sesi gagal di akhir (misal jaringan putus mendadak), antrekan secara offline
+          const offlineSession: OfflineSession = {
+            id: Math.random().toString(36).substring(2, 11),
+            child_id: childId,
+            timestamp: new Date().toISOString(),
+            word_attempts: updatedResults.map(r => ({
+              target_letter: r.letter,
+              image_base64: r.image_base64
+            })),
+            synced: false
+          };
+          SyncService.addSessionToQueue(offlineSession);
+
+          sessionStorage.setItem('dyslexia_result', JSON.stringify({
+            risk_score: -1,
+            risk_level: 'Luring',
+            recommended_level: 1,
+            detected_errors: ['Skrining luring tersimpan.'],
+            offline_session_id: offlineSession.id
+          }));
+        }
+
+        router.push('/summary');
       }
-    } catch (error) {
-      console.error("Upload Error:", error);
-      alert("Hubungan ke server terputus.");
-    } finally {
-      setIsCapturing(false);
     }
   };
 
@@ -194,7 +319,9 @@ export default function ScreeningPage() {
                   alt="Listen" 
                   className={styles.listenIcon} 
                   style={{ 
-                     filter: isPlaying ? 'grayscale(1) brightness(0.7)' : 'brightness(0) invert(1)'
+                     filter: isPlaying 
+                       ? 'grayscale(1) brightness(0.7)' 
+                       : (theme === 'dark' ? 'brightness(0) invert(1)' : 'brightness(0) invert(0.12)')
                   }} 
                 /> 
                 <span className={styles.listenText}>

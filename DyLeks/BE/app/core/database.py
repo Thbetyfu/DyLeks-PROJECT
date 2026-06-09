@@ -21,6 +21,22 @@ engine = create_engine(
     connect_args={"check_same_thread": False} if "sqlite" in SQLALCHEMY_DATABASE_URL else {}
 )
 
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    """
+    Mengonfigurasi SQLite database ke WAL mode agar konkurensi pembacaan
+    dan penulisan berjalan tanpa hambatan locked database.
+    """
+    if dbapi_connection.__class__.__module__.startswith("sqlite3"):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL;")
+        cursor.execute("PRAGMA synchronous=NORMAL;")
+        cursor.close()
+
+
 # Pembuatan pembuat sesi (SessionLocal) untuk setiap request
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

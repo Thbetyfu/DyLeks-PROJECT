@@ -4,7 +4,7 @@
 
 **Ekosistem Edge-AI Offline, PWA Responsif Multi-Device, dan Sensor Fusion IoT untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
 
-> **Versi Dokumentasi:** 2.0 (Diperbarui 9 Juni 2026)
+> **Versi Dokumentasi:** 2.1 (Diperbarui 9 Juni 2026)
 > **Status Pengembangan:** Aktif — Fase 2 (Frontend & AI Services)
 
 ---
@@ -46,7 +46,7 @@ Sistem dioptimasi secara arsitektural agar mampu berjalan lancar pada perangkat 
 | **Vision AI (Primary)** | **Ollama Vision (LLaVA/Phi-3)** | Engine utama analisis tulisan tangan, 100% offline |
 | **Fuzzy Matching** | **RapidFuzz 3.10** | Deteksi pola disleksia: reversal b/d, omission, insertion, transposition |
 | **Audio Scaffolding** | **Python gTTS + File MP3** | 5 file audio luring tersedia di `/public/assets/audio/` |
-| **Local Database** | **SQLite (via SQLAlchemy 2.0)** | Skema relasional: users, child_profiles, screening_sessions, exercises |
+| **Local Database** | **SQLite (via SQLAlchemy 2.0)** | Skema relasional; Mode WAL & Synchronous NORMAL aktif untuk konkurensi tinggi |
 | **Auth** | **Bcrypt + HMAC-SHA256 Token** | Isolasi data antar guru tanpa JWT overhead |
 | **Offline Sync** | **Service Worker + IndexedDB** | Background Sync untuk antrian submit foto saat koneksi terputus |
 | **IoT (Direncanakan)** | **ESP32 + MPU6050 + MQTT** | Smart Writing Grip — belum diimplementasikan |
@@ -267,7 +267,7 @@ Modul `BE/app/services/fuzzy_matching.py` adalah jantung pedagogis DyLeks. Berbe
 
 ---
 
-## 9. Protokol Offline-First (PWA)
+## 9. Protokol Offline-First (PWA) & Sync Queue
 
 DyLeks menggunakan 4 strategi cache berbeda di Service Worker (`FE/public/sw.js`):
 
@@ -276,7 +276,15 @@ DyLeks menggunakan 4 strategi cache berbeda di Service Worker (`FE/public/sw.js`
 | **Cache-First** | Audio MP3, SVG, Font, Ikon | Aset statis tidak pernah berubah saat runtime |
 | **Stale-While-Revalidate** | JS/CSS chunk Next.js | Tampilkan cepat dari cache, update di background |
 | **Network-First** | Halaman HTML (navigate) | Prioritas data segar jika ada koneksi |
-| **IndexedDB Queue** | Submit foto tulisan tangan | Antrian Background Sync saat koneksi terputus |
+| **LocalStorage Queue** | Antrean foto tulisan tangan | Antrean lokal ketika koneksi ke laptop server putus |
+
+### A. Pilar 1: Risk Assessment Engine (Sesi Agregat)
+* **Penyimpanan Database SQLite**: Sesi skrining yang selesai dianalisis akan dikirim ke endpoint `POST /api/v1/screening/submit-session` untuk disimpan ke tabel `screening_sessions`.
+* **Sinkronisasi Profil Siswa**: Kolom `risk_score`, `risk_level`, dan `current_level` (direkomendasikan 1-5) pada tabel `child_profiles` otomatis diperbarui berdasarkan hasil skrining agregat.
+
+### B. Pilar 2: Mekanisme Antrean Luring & Sinkronisasi Batch
+* **Kompresi Kamera Luring**: Saat offline, tangkapan kamera dikompresi menjadi **400x400 piksel** (JPEG 0.6) dengan ukuran berkas ~20KB-30KB per gambar untuk mencegah batas memori *LocalStorage* penuh.
+* **Batch Sync API**: Saat koneksi Wi-Fi ke laptop server guru pulih kembali, klien memicu `POST /api/v1/sync/batch` yang memproses OCR semua gambar secara paralel/sekuensial dan menyimpan hasil analisis agregat ke database SQLite lokal.
 
 **Pre-cache saat install (Service Worker):**
 - Semua 8 halaman utama (`/`, `/screening`, `/latihan`, `/game`, `/result`, `/summary`, `/copilot`)
@@ -376,6 +384,9 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 2. **Backend FastAPI** berjalan di laptop server guru pada **port 3002** (HTTP).
 3. **Penyelesaian Mixed Content Blocking:** Dengan menjaga agar Frontend dan Backend berjalan dalam protokol HTTP murni yang sama di jaringan Wi-Fi kelas (`http://192.168.x.x`), peramban klien tidak akan memblokir request API. Hal ini menyelesaikan isu *Mixed Content Blocking* yang terjadi jika frontend dihost di HTTPS publik.
 4. **PWA Offline Installation:** PWA Next.js dapat dipasang langsung ke layar utama (*Add to Home Screen*) peramban siswa melalui alamat IP lokal server tanpa koneksi internet sama sekali.
+5. **Skrip Otomatisasi Startup (Background Services)**: Untuk mengonfigurasi auto-start server Next.js & FastAPI secara transparan tanpa membuka cmd manual, gunakan berkas [setup_services.bat](file:///d:/4. Thoriq_KULIAH/1.Lomba Thoriq/SEMESTER 4/05. Samsung/DyLeks/setup_services.bat) (butuh hak Administrator). Skrip ini mendaftarkan layanan ke Windows Task Scheduler dengan trigger `onlogon` dan hak akses tertinggi (`/rl HIGHEST`).
+6. **Panduan Setup DNS & Wi-Fi Kelas (Zero-IP Portal)**: Untuk memetakan alamat IP lokal server guru ke domain `dyleks.id` atau `dyleks.local` pada router Wi-Fi kelas luring, ikuti panduan lengkap di [dns_setup_guide.md](file:///d:/4. Thoriq_KULIAH/1.Lomba Thoriq/SEMESTER 4/05. Samsung/DyLeks/docs/dns_setup_guide.md).
+7. **Optimasi SQLite WAL (Write-Ahead Logging)**: Mencegah error database locked pada luring dengan mengaktifkan mode WAL (`PRAGMA journal_mode=WAL;` dan `PRAGMA synchronous=NORMAL;`) via SQLAlchemy connection listener untuk mengatasi sinkronisasi konkuren tinggi dari client.
 
 ### Isolasi Data Sekolah (Zero-Config Multitenancy)
 
@@ -393,7 +404,8 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 | **Sprint 1** | Adaptive Engine (Spaced Repetition), Scoring Service | Selesai |
 | **Sprint 2** | TrOCR ONNX, Ollama Vision integration, Image Preprocessing | Selesai |
 | **Sprint 3** | Game Memory Card, Halaman Result visualisasi, UI/UX refinement | Selesai |
-| **Sprint 3.5** | Auth Guru (bcrypt + HMAC token), DyslexiaFuzzyMatcher engine, PWA Service Worker | **Selesai** |
+| **Sprint 3.5** | Auth Guru (bcrypt + HMAC token), DyslexiaFuzzyMatcher engine, PWA Service Worker, Pilar 1 (Risk Assessment Engine SQLite), Pilar 2 (Offline PWA Sync Batch Queue) | **Selesai** |
+| **Sprint 3.6** | Peningkatan Stabilitas Edge Server (Auto-Start Script, SQLite WAL Mode, Local DNS Setup & Docs) | **Selesai** |
 | **Sprint 4** | IoT Smart Writing Grip (ESP32 + MPU6050 + MQTT) | Belum dimulai (tunggu hardware) |
 
 ---
@@ -414,5 +426,5 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 ---
 
 **Terakhir Diperbarui:** 9 Juni 2026
-**Versi Dokumen:** 2.0 (Revisi Lengkap — Auth System + Fuzzy Matching + PWA Offline)
+**Versi Dokumen:** 2.1 (Pilar 3 — Stabilitas Edge Server & SQLite WAL Mode)
 **Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)

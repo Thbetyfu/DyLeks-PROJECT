@@ -13,11 +13,11 @@ from datetime import datetime
 
 class UserCreate(BaseModel):
     """Payload untuk mendaftarkan Guru baru ke server lokal."""
-    full_name: str = Field(..., min_length=3, max_length=150, example="Ibu Yuli Rahayu")
-    username: str = Field(..., min_length=4, max_length=80, example="yuli_sd12")
-    password: str = Field(..., min_length=6, example="rahasia123")
-    school_name: Optional[str] = Field(None, example="SD Negeri Dayeuhkolot 12")
-    school_region: Optional[str] = Field(None, example="Kab. Bandung, Jawa Barat")
+    full_name: str = Field(..., min_length=3, max_length=150, json_schema_extra={"example": "Ibu Yuli Rahayu"})
+    username: str = Field(..., min_length=4, max_length=80, json_schema_extra={"example": "yuli_sd12"})
+    password: str = Field(..., min_length=6, json_schema_extra={"example": "rahasia123"})
+    school_name: Optional[str] = Field(None, json_schema_extra={"example": "SD Negeri Dayeuhkolot 12"})
+    school_region: Optional[str] = Field(None, json_schema_extra={"example": "Kab. Bandung, Jawa Barat"})
 
 
 class UserLogin(BaseModel):
@@ -41,11 +41,11 @@ class UserResponse(BaseModel):
 
 class ChildProfileCreate(BaseModel):
     """Payload untuk menambahkan profil siswa baru oleh Guru."""
-    name: str = Field(..., min_length=2, max_length=100, example="Daniel Pratama")
-    age: Optional[int] = Field(None, ge=4, le=18, example=9)
-    gender: Optional[str] = Field(None, example="L")
-    grade: Optional[str] = Field(None, example="Kelas 3 SD")
-    teacher_notes: Optional[str] = Field(None, example="Sering salah tulis huruf b dan d")
+    name: str = Field(..., min_length=2, max_length=100, json_schema_extra={"example": "Daniel Pratama"})
+    age: Optional[int] = Field(None, ge=4, le=18, json_schema_extra={"example": 9})
+    gender: Optional[str] = Field(None, json_schema_extra={"example": "L"})
+    grade: Optional[str] = Field(None, json_schema_extra={"example": "Kelas 3 SD"})
+    teacher_notes: Optional[str] = Field(None, json_schema_extra={"example": "Sering salah tulis huruf b dan d"})
 
 
 class ChildProfileResponse(BaseModel):

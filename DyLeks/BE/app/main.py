@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
-from app.api.v1 import screening, chat, learning, auth
+from app.api.v1 import screening, chat, learning, auth, sync
+from app.core.rate_limiter import general_rate_limiter
+from contextlib import asynccontextmanager
 
 # Load all models explicitly before creating tables
 # URUTAN IMPORT PENTING: User harus di-load sebelum ChildProfile
@@ -12,39 +14,54 @@ from app.models import user, child_profile, exercise, screening_session
 # (termasuk tabel 'users' yang baru ditambahkan)
 Base.metadata.create_all(bind=engine)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Jalankan Hardware Diagnostic sebelum memuat OCR engine
+    from app.services.hardware_diagnostic import run_diagnostic
+    run_diagnostic()
+
+    from app.services.trocr_service import get_trocr_engine
+    print("[Startup] Menyiapkan Otak AI (TrOCR)...")
+    get_trocr_engine()
+    print("[Startup] Otak AI Siap!")
+    yield
+
 app = FastAPI(
     title="DyslexiAI Backend API",
     description=(
         "API untuk platform deteksi dini disleksia DyLeks. "
         "Berjalan 100% offline di jaringan Wi-Fi lokal kelas."
     ),
-    version="1.2.0"
+    version="1.2.0",
+    lifespan=lifespan
 )
 
-# CORS: Mengizinkan akses dari semua origin untuk jaringan lokal kelas.
-# Di lingkungan produksi sekolah, ganti "*" dengan IP spesifik laptop server.
-origins = ["*"]
-
+# CORS: Membatasi akses origin hanya pada subnet IP privat lokal (RFC 1918)
+# guna mencegah serangan CSRF/pembajakan API saat server terhubung ke internet.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origin_regex=(
+        r"^https?://("
+        r"localhost|127\.0\.0\.1|"
+        r"192\.168\.\d{1,3}\.\d{1,3}|"
+        r"172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}|"
+        r"10\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
+        r"([a-zA-Z0-9-]+\.)?dyleks\.(id|local)"
+        r")(:\d+)?$"
+    ),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Registrasi Router
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth & User Management"])
-app.include_router(screening.router, prefix="/api/v1/screening", tags=["Screening Mode"])
-app.include_router(chat.router, prefix="/api/v1/chat", tags=["AI Tutor Chat"])
-app.include_router(learning.router, prefix="/api/v1/learning", tags=["Learning Mode"])
+# Registrasi Router dengan proteksi rate limiter lokal
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth & User Management"], dependencies=[Depends(general_rate_limiter.check_rate_limit)])
+app.include_router(screening.router, prefix="/api/v1/screening", tags=["Screening Mode"])  # Rute /upload dilindungi upload_rate_limiter secara spesifik
+app.include_router(chat.router, prefix="/api/v1/chat", tags=["AI Tutor Chat"], dependencies=[Depends(general_rate_limiter.check_rate_limit)])
+app.include_router(learning.router, prefix="/api/v1/learning", tags=["Learning Mode"], dependencies=[Depends(general_rate_limiter.check_rate_limit)])
+app.include_router(sync.router, prefix="/api/v1/sync", tags=["Offline Sync"])  # Rute /batch dilindungi upload_rate_limiter secara spesifik
 
-@app.on_event("startup")
-async def startup_event():
-    from app.services.trocr_service import get_trocr_engine
-    print("[Startup] Menyiapkan Otak AI (TrOCR)...")
-    get_trocr_engine()
-    print("[Startup] Otak AI Siap!")
+# Startup processes migrated to lifespan handler
 
 @app.get("/")
 def read_root():

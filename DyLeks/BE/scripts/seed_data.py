@@ -3,6 +3,8 @@ from app.core.database import SessionLocal, engine, Base
 
 from app.models.child_profile import ChildProfile
 from app.models.exercise import Exercise, LearningSession, ExerciseResponse
+from app.models.screening_session import ScreeningSession
+from app.models.user import User
 
 
 Base.metadata.create_all(bind=engine)

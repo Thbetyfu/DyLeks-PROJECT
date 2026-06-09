@@ -588,6 +588,17 @@ Untuk memastikan kelancaran pengembangan ekosistem **DyLeks** luring, rencana ke
     *   [x] Rancang halaman `FE/pages/game.tsx` untuk sistem reward (poin, badge, streak) guna menstimulasi motivasi belajar anak disleksia.
     *   [x] Sempurnakan halaman `FE/pages/result.tsx` agar menampilkan grafik distribusi pola kesalahan secara intuitif (glassmorphic styling).
 
+### 📡 Sprint 3.5: Risk Engine & PWA Offline Sync (Selesai ✅)
+*Target: Menyimpan riwayat skrining ke database secara offline-first dan sinkronisasi batch.*
+
+*   **Pilar 1: Risk Assessment Engine SQLite:**
+    *   [x] Implementasikan endpoint `/submit-session` di `BE/app/api/v1/screening.py` untuk menyimpan data sesi skrining agregat.
+    *   [x] Perbarui kolom `risk_score`, `risk_level`, dan `current_level` pada profil siswa (`ChildProfile`) secara otomatis setelah skrining.
+*   **Pilar 2: PWA Offline Sync Mechanism:**
+    *   [x] Buat kelas `SyncService` di `FE/lib/sync_service.ts` untuk mengantrekan sesi offline di LocalStorage dengan kompresi tangkapan gambar (400x400, JPEG 0.6).
+    *   [x] Tambahkan antrean sinkronisasi luring dan endpoint batch sync `POST /api/v1/sync/batch` di `BE/app/api/v1/sync.py`.
+    *   [x] Sempurnakan halaman `FE/pages/summary.tsx` dan `FE/pages/result.tsx` untuk menampilkan status luring dan tombol sinkronisasi manual.
+
 ### 🔌 Sprint 4: IoT Smart Writing Grip & Telemetry Integration (Fase Akhir)
 *Target: Integrasi siber-fisik telemetri sensor grip pensil setelah perangkat keras siap.*
 
@@ -601,6 +612,6 @@ Untuk memastikan kelancaran pengembangan ekosistem **DyLeks** luring, rencana ke
 
 ---
 
-**Terakhir Diperbarui:** 1 Juni 2026  
-**Versi Dokumen:** 1.2 (Revisi Penjadwalan IoT Terakhir)  
+**Terakhir Diperbarui:** 9 Juni 2026  
+**Versi Dokumen:** 2.0 (Revisi Pilar 1 & Pilar 2 Selesai)  
 **Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)

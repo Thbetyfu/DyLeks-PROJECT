@@ -12,10 +12,17 @@ import re
 import os
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app.schemas.screening_schema import ScreeningRequest, ScreeningResponse
+from app.core.rate_limiter import upload_rate_limiter
+from app.schemas.screening_schema import (
+    ScreeningRequest, ScreeningResponse,
+    ScreeningSessionSubmit, ScreeningSessionResponse
+)
 from app.core.database import get_db
 from app.services.ollama_vision_service import analyze_dyslexia_image
 from app.services.trocr_service import analyze_with_trocr
+from app.services.scoring_service import ScoringService
+from app.models.screening_session import ScreeningSession
+from app.models.child_profile import ChildProfile
 
 router = APIRouter()
 
@@ -54,7 +61,7 @@ def _classify_risk(score: float, target_letter: str) -> tuple[str, int, str]:
             "Level 5 siap untuk kata morfologi STEM yang lebih panjang."
         )
 
-@router.post("/upload", response_model=ScreeningResponse)
+@router.post("/upload", response_model=ScreeningResponse, dependencies=[Depends(upload_rate_limiter.check_rate_limit)])
 async def analyze_handwriting(payload: ScreeningRequest, db: Session = Depends(get_db)):
     """
     Analisis tulisan tangan anak dengan Dual-Engine AI.
@@ -74,13 +81,17 @@ async def analyze_handwriting(payload: ScreeningRequest, db: Session = Depends(g
     engine_used = "unknown"
 
     # --- Engine 1: Ollama Vision (Primary, Offline) ---
-    try:
-        result = await analyze_dyslexia_image(raw_bytes, payload.target_letter)
-        engine_used = result.get("engine", "ollama-vision")
-        print(f"[Engine] {engine_used.upper()} | Target: {payload.target_letter} | Skor: {result['score']}")
-    except Exception as e:
-        print(f"[Engine] Ollama Vision gagal, fallback ke TrOCR: {e}")
-        result = None
+    disable_ollama = os.getenv("DISABLE_OLLAMA_VISION") == "true"
+    if not disable_ollama:
+        try:
+            result = await analyze_dyslexia_image(raw_bytes, payload.target_letter)
+            engine_used = result.get("engine", "ollama-vision")
+            print(f"[Engine] {engine_used.upper()} | Target: {payload.target_letter} | Skor: {result['score']}")
+        except Exception as e:
+            print(f"[Engine] Ollama Vision gagal, fallback ke TrOCR: {e}")
+            result = None
+    else:
+        print(f"[Engine] Ollama Vision dinonaktifkan via diagnostic (skip ke TrOCR).")
 
 
     # --- Engine 2: TrOCR Transformer (Fallback Offline) ---
@@ -113,4 +124,43 @@ async def analyze_handwriting(payload: ScreeningRequest, db: Session = Depends(g
         recommended_level=level,
         feedback=feedback_msg,
         detected_errors=errors
+    )
+
+@router.post("/submit-session", response_model=ScreeningSessionResponse)
+def submit_screening_session(
+    payload: ScreeningSessionSubmit,
+    db: Session = Depends(get_db)
+):
+    """
+    Menyimpan sesi skrining baru ke database dari online flow.
+    Jika child_id disediakan, perbarui ChildProfile.
+    """
+    # Simpan ScreeningSession ke DB
+    db_session = ScreeningSession(
+        child_id=payload.child_id,
+        risk_score=payload.risk_score,
+        risk_level=payload.risk_level,
+        recommended_level=payload.recommended_level,
+        feedback=payload.feedback
+    )
+    db.add(db_session)
+
+    # Jika child_id disediakan dan valid, perbarui ChildProfile
+    if payload.child_id:
+        child = db.query(ChildProfile).filter(ChildProfile.id == payload.child_id).first()
+        if child:
+            child.risk_score = payload.risk_score
+            child.risk_level = payload.risk_level
+            child.current_level = payload.recommended_level
+
+    db.commit()
+    db.refresh(db_session)
+
+    return ScreeningSessionResponse(
+        status="success",
+        session_id=db_session.id,
+        risk_score=db_session.risk_score,
+        risk_level=db_session.risk_level,
+        recommended_level=db_session.recommended_level,
+        feedback=db_session.feedback
     )

@@ -505,7 +505,14 @@ export default function Latihan() {
                 className={screeningStyles.listenCard}
                 onClick={() => playLetterSound(currentTarget)}
               >
-                <img src="/assets/ear.svg" alt="Listen" className={screeningStyles.listenIcon} />
+                <img 
+                  src="/assets/ear.svg" 
+                  alt="Listen" 
+                  className={screeningStyles.listenIcon} 
+                  style={{ 
+                     filter: theme === 'dark' ? 'brightness(0) invert(1)' : 'brightness(0) invert(0.12)'
+                  }}
+                />
                 <span className={screeningStyles.listenText}>Dengarkan bunyinya</span>
               </button>
               <p className={screeningStyles.subTitle}>Tekan tombol untuk mendengar suara!</p>
@@ -590,7 +597,7 @@ export default function Latihan() {
           <title>Latihan - DyLeks</title>
         </Head>
 
-        <div className={`${styles.themeToggleWrapper} ${styles.themeToggleLanding}`}>
+        <div className={styles.themeToggleWrapper}>
           <ThemeToggle />
         </div>
 

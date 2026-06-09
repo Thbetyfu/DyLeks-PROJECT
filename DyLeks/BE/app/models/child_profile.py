@@ -8,10 +8,44 @@ Alasan ('Why'):
   bukan hanya di level aplikasi. Ini adalah desain Privacy-First.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, Text
+from sqlalchemy.types import TypeDecorator
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.core.encryption import encrypt_data, decrypt_data
+
+
+class EncryptedString(TypeDecorator):
+    """Mengenkripsi data string secara transparan sebelum disimpan ke SQLite."""
+    impl = String
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            return encrypt_data(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            return decrypt_data(value)
+        return value
+
+
+class EncryptedText(TypeDecorator):
+    """Mengenkripsi data teks panjang secara transparan sebelum disimpan ke SQLite."""
+    impl = Text
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            return encrypt_data(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            return decrypt_data(value)
+        return value
 
 
 class ChildProfile(Base):
@@ -37,7 +71,7 @@ class ChildProfile(Base):
     )
 
     # Data Dasar Anak
-    name = Column(String(100), nullable=False)
+    name = Column(EncryptedString(100), nullable=False)
     age = Column(Integer, nullable=True)
     gender = Column(String(10), nullable=True)  # "L" atau "P"
     grade = Column(String(20), nullable=True)   # Contoh: "Kelas 2 SD"
@@ -48,11 +82,11 @@ class ChildProfile(Base):
     risk_level = Column(String(20), default="Belum Dianalisis")  # Rendah/Sedang/Tinggi
 
     # Catatan Pedagogi (opsional dari guru)
-    teacher_notes = Column(Text, nullable=True)
+    teacher_notes = Column(EncryptedText, nullable=True)
 
     # Timestamp
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relasi ke riwayat sesi belajar dan skrining
     learning_sessions = relationship("LearningSession", backref="child", lazy=True)

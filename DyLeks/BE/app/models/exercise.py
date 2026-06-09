@@ -5,7 +5,7 @@ Mendefinisikan bank soal, sesi latihan, dan pencatatan respon anak.
 
 from sqlalchemy import Column, String, Integer, JSON, ForeignKey, DateTime, Float, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from app.core.database import Base
 
@@ -20,7 +20,7 @@ class Exercise(Base):
     type = Column(String(50)) # 'visual', 'auditory', 'writing'
     content = Column(JSON) # Menyimpan teks soal, URL audio, atau pilihan jawaban
     correct_answer = Column(String(255))
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 class LearningSession(Base):
     """
@@ -30,7 +30,7 @@ class LearningSession(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     child_id = Column(String(36), ForeignKey("child_profiles.id"), nullable=False)
-    start_time = Column(DateTime, default=datetime.utcnow)
+    start_time = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     end_time = Column(DateTime, nullable=True)
     total_score = Column(Float, default=0.0)
     

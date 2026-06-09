@@ -11,7 +11,7 @@ Alasan ('Why'):
   - Password di-hash dengan bcrypt agar aman disimpan di SQLite lokal.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -42,7 +42,7 @@ class User(Base):
 
     # Kontrol Akses & Status
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_login = Column(DateTime, nullable=True)
 
     # Relasi: Satu Guru memiliki banyak profil siswa

@@ -30,3 +30,24 @@ class ScreeningResponse(BaseModel):
     recommended_level: int   # Rekomendasi level belajar (1-5)
     feedback: str            # Pesan ramah/saran untuk orang tua
     detected_errors: list[str] = [] # Daftar pola kesalahan visual yang ditemukan
+
+class ScreeningSessionSubmit(BaseModel):
+    """
+    Payload submit hasil sesi skrining agregat dari online flow.
+    """
+    child_id: Optional[str] = None
+    risk_score: float
+    risk_level: str
+    recommended_level: int
+    feedback: str
+
+class ScreeningSessionResponse(BaseModel):
+    """
+    Hasil analisis sesi skrining agregat yang disimpan ke database.
+    """
+    status: str
+    session_id: str
+    risk_score: float
+    risk_level: str
+    recommended_level: int
+    feedback: str
