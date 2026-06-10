@@ -5,7 +5,7 @@
 ::
 :: Alasan Desain ('Why'):
 ::   1. Menghindari penutupan jendela cmd secara tidak sengaja oleh guru saat kelas berlangsung.
-::   2. Menjalankan Next.js (port 3001) dan FastAPI (port 3002) secara otomatis
+::   2. Menjalankan Next.js (port 3003) dan FastAPI (port 3004) secara otomatis
 ::      begitu guru login ke sistem operasi Windows.
 ::   3. Tanpa dependensi tools eksternal (menggunakan Task Scheduler bawaan Windows).
 :: =========================================================================
@@ -49,9 +49,9 @@ set "ROOT_DIR=%~dp0"
 set "BE_DIR=%ROOT_DIR%BE"
 set "FE_DIR=%ROOT_DIR%FE"
 
-:: Mendaftarkan Task Backend FastAPI (Port 3002)
+:: Mendaftarkan Task Backend FastAPI (Port 3004)
 echo [1/2] Mendaftarkan DyLeks Backend API...
-schtasks /create /tn "DyLeks_Backend" /tr "cmd.exe /c cd /d \"%BE_DIR%\" && python -m uvicorn app.main:app --host 0.0.0.0 --port 3002" /sc onlogon /rl HIGHEST /f
+schtasks /create /tn "DyLeks_Backend" /tr "cmd.exe /c cd /d \"%BE_DIR%\" && python -m uvicorn app.main:app --host 0.0.0.0 --port 3004" /sc onlogon /rl HIGHEST /f
 if %errorLevel% == 0 (
     echo ^> DyLeks Backend berhasil didaftarkan.
 ) else (
@@ -59,7 +59,7 @@ if %errorLevel% == 0 (
 )
 echo.
 
-:: Mendaftarkan Task Frontend Next.js PWA (Port 3001)
+:: Mendaftarkan Task Frontend Next.js PWA (Port 3003)
 echo [2/2] Mendaftarkan DyLeks Frontend PWA...
 schtasks /create /tn "DyLeks_Frontend" /tr "cmd.exe /c cd /d \"%FE_DIR%\" && npm run dev" /sc onlogon /rl HIGHEST /f
 if %errorLevel% == 0 (

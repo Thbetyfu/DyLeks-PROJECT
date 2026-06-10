@@ -116,3 +116,13 @@ def test_qr_flow_generic(auth_header, child_profile_id):
     assert conn_resp.status_code == 200
     assert conn_resp.json()["status"] == "success"
 
+
+def test_generate_og_recommendation(auth_header, child_profile_id):
+    # Test endpoint rekomendasi intervensi Orton-Gillingham otomatis
+    resp = client.post(f"/api/v1/auth/children/{child_profile_id}/recommend-og", headers=auth_header)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "recommendation" in data
+    assert isinstance(data["recommendation"], str)
+    assert len(data["recommendation"]) > 0
+

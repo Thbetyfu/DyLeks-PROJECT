@@ -92,7 +92,7 @@ export default function CopilotPage() {
         payload.context = context;
       }
 
-      const res = await fetch('http://localhost:3002/api/v1/chat/', {
+      const res = await fetch('http://localhost:3004/api/v1/chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -107,7 +107,7 @@ export default function CopilotPage() {
     } catch (err) {
       setMessages(prev => [...prev, {
         role: 'copilot',
-        text: 'Tidak dapat terhubung ke server. Pastikan backend DyLeks sudah berjalan di port 3002.',
+        text: 'Tidak dapat terhubung ke server. Pastikan backend DyLeks sudah berjalan di port 3004.',
         timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       }]);
     } finally {

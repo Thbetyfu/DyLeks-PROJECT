@@ -17,8 +17,8 @@ let mainWindow;
 let backendProcess;
 let frontendProcess;
 
-const BACKEND_PORT = 3002;
-const FRONTEND_PORT = 3001;
+const BACKEND_PORT = 3004;
+const FRONTEND_PORT = 3003;
 
 function isPortInUse(port, callback) {
   const server = http.createServer();

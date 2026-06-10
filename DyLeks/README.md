@@ -41,7 +41,7 @@ Sistem dioptimasi secara arsitektural agar mampu berjalan lancar pada perangkat 
 | Komponen | Teknologi | Peran & Status |
 | --- | --- | --- |
 | **Frontend Client** | **Next.js 16 + PWA (next-pwa)** | UI/UX responsif; Service Worker offline aktif |
-| **Backend Server** | **FastAPI (Python 3.9+)** | REST API berjalan di port 3002 |
+| **Backend Server** | **FastAPI (Python 3.9+)** | REST API berjalan di port 3004 |
 | **AI OCR Engine** | **TrOCR (ONNX Runtime)** | Fallback offline dengan ONNX Runtime di backend |
 | **Vision AI (Primary)** | **Ollama Vision (LLaVA/Moondream)** | Engine utama analisis tulisan tangan, adaptif terhadap spesifikasi RAM server |
 | **Fuzzy Matching** | **RapidFuzz 3.10** | Deteksi pola disleksia: reversal b/d, omission, insertion, transposition |
@@ -112,6 +112,30 @@ Anak disleksia memiliki tingkat frustrasi kognitif yang tinggi jika diberi tanta
 * Antarmuka chat 100% offline dengan model bahasa kecil (Ollama lokal).
 * Guru dapat bertanya rekomendasi intervensi berdasarkan pola error anak.
 
+### H. Dashboard Guru Terintegrasi (`FE/pages/dashboard.tsx`)
+
+* Halaman khusus dashboard guru untuk memantau kemajuan membaca dan motorik siswa secara luring.
+* Manajemen profil siswa (tambah/hapus profil, pencatatan gender/kelas, pemantauan riwayat skrining).
+* Metrik visualisasi ringkasan status risiko kelas (Tinggi, Sedang, Rendah).
+* **Rekomendasi Rencana Belajar (OG) Proaktif:** Mengintegrasikan model SLM (Ollama) luring secara proaktif untuk merumuskan draf rencana intervensi Orton-Gillingham spesifik bagi siswa langsung dari detail profil dashboard sekali klik.
+
+
+### I. Keamanan Data: Enkripsi Transparan Orton-Gillingham (AES-256)
+
+* Data catatan guru yang sensitif dilindungi dengan enkripsi transparan **AES-256** menggunakan library `cryptography` di backend.
+* Kunci enkripsi diturunkan secara unik untuk setiap komputer sekolah menggunakan Windows `MachineGuid` lokal perangkat guru. Data siswa terenkripsi aman di dalam `dyslexiai_local.db` dan tidak dapat dibaca di luar komputer yang bersangkutan.
+
+### J. Konektivitas QR Luring Dinamis (`FE/pages/connect.tsx` & `/dashboard`)
+
+* Fitur penyambungan otomatis mandiri perangkat siswa ke laptop server guru dengan sekali pindai QR.
+* Begitu siswa terhubung, server mendeteksi lewat polling asinkron, memutar notifikasi audio sukses luring ("ting-ting"), dan otomatis memperbarui QR Code untuk siswa berikutnya dalam 3 detik.
+
+### K. Peluncur Desktop Terpadu (Electron Integration)
+
+* Frontend Next.js dan backend FastAPI dikemas ke dalam satu executable desktop luring dengan Electron (`FE/desktop/main.js`).
+* Menghilangkan kerumitan menjalankan perintah terminal bagi guru di pelosok.
+* Manajemen penutupan proses latar belakang otomatis saat aplikasi desktop ditutup guna menghindari akumulasi process zombie.
+
 ---
 
 ## 5. Arsitektur Backend yang Telah Diimplementasikan
@@ -120,7 +144,7 @@ Anak disleksia memiliki tingkat frustrasi kognitif yang tinggi jika diberi tanta
 
 ```text
 DyLeks/
-├── BE/                                    # Python FastAPI Backend (port 3002)
+├── BE/                                    # Python FastAPI Backend (port 3004)
 │   ├── app/
 │   │   ├── api/v1/
 │   │   │   ├── auth.py                    # Register, Login, CRUD ChildProfile
@@ -157,7 +181,7 @@ DyLeks/
 │   ├── requirements.txt                   # Dependensi Python (termasuk rapidfuzz, bcrypt)
 │   └── wsgi.py
 │
-├── FE/                                    # Next.js 16 Frontend (port 3001)
+├── FE/                                    # Next.js 16 Frontend (port 3003)
 │   ├── pages/
 │   │   ├── _app.tsx                       # Entry point: ThemeProvider + Poppins font
 │   │   ├── index.tsx                      # Dashboard utama DyLeks
@@ -324,7 +348,7 @@ Untuk memaksimalkan penggunaan DyLeks di daerah 3T yang serba luring (tanpa inte
 1. **Nyalakan Hotspot Lokal:** Guru menyalakan router Wi-Fi kelas luring (atau mengaktifkan hotspot pribadi dari smartphone guru tanpa kuota data).
 2. **Koneksikan Perangkat:** Hubungkan laptop guru (Server) ke jaringan Wi-Fi lokal kelas tersebut.
 3. **Nyalakan Server Hub DyLeks:** Guru mengklik ganda (double-click) berkas `Mulai_DyLeks.bat` di direktori utama proyek untuk menyalakan backend dan frontend secara otomatis.
-4. **Buka Dashboard:** Setelah peluncur otomatis berjalan, browser laptop akan otomatis terbuka mengarah ke halaman Dashboard Guru (`http://localhost:3001/dashboard`). Masuk menggunakan kredensial guru.
+4. **Buka Dashboard:** Setelah peluncur otomatis berjalan, browser laptop akan otomatis terbuka mengarah ke halaman Dashboard Guru (`http://localhost:3003/dashboard`). Masuk menggunakan kredensial guru.
 
 ### Tahap 2: Sambungan Mandiri Siswa (5 Menit Pertama Kelas)
 1. **Hubungkan Wi-Fi Siswa:** Anak-anak menyalakan Wi-Fi pada smartphone masing-masing dan menyambungkannya ke Wi-Fi kelas luring yang sama.
@@ -361,10 +385,10 @@ Kami telah membuat skrip peluncur otomatis [Mulai_DyLeks.bat](file:///d:/4. Thor
 1. Hubungkan Laptop Guru ke Wi-Fi kelas luring.
 2. Klik ganda (double-click) berkas `Mulai_DyLeks.bat`.
 3. Skrip otomatis akan:
-   - Membersihkan port 3001 & 3002 dari proses zombie sebelumnya.
+   - Membersihkan port 3003 & 3004 dari proses zombie sebelumnya.
    - Menjalankan backend FastAPI luring.
    - Menjalankan frontend Next.js luring.
-   - Membuka peramban (browser) ke halaman Dashboard Guru (`http://localhost:3001/dashboard`).
+   - Membuka peramban (browser) ke halaman Dashboard Guru (`http://localhost:3003/dashboard`).
 4. **Untuk mematikan:** Tekan tombol apa saja pada jendela CMD peluncur tersebut, dan sistem akan menghentikan seluruh server latar belakang dengan aman.
 
 ---
@@ -382,9 +406,9 @@ Jika Anda ingin melakukan debugging atau pengembangan kode secara manual, ikuti 
 cd BE
 pip install -r requirements.txt
 python -m app.services.hardware_diagnostic  # Opsional: jalankan cek spesifikasi luring
-uvicorn app.main:app --host 0.0.0.0 --port 3002 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 3004 --reload
 ```
-Backend API tersedia di `http://localhost:3002` dan `http://[IP-LOKAL-LAPTOP]:3002`.
+Backend API tersedia di `http://localhost:3004` dan `http://[IP-LOKAL-LAPTOP]:3004`.
 
 #### C. Setup Teacher's Copilot (Opsional — Ollama)
 ```bash
@@ -399,19 +423,19 @@ Pastikan URL Ollama di `BE/app/core/config.py` mengarah ke `http://localhost:114
 cd FE
 npm install
 npm run dev
-# Dev server berjalan di http://localhost:3001
+# Dev server berjalan di http://localhost:3003
 ```
-Dari smartphone yang terhubung ke Wi-Fi yang sama, buka `http://[IP-LOKAL-LAPTOP]:3001`.
+Dari smartphone yang terhubung ke Wi-Fi yang sama, buka `http://[IP-LOKAL-LAPTOP]:3003`.
 Klik **"Add to Home Screen"** di browser untuk menginstall sebagai PWA offline.minal A)
 
 ```bash
 cd BE
 pip install -r requirements.txt
 python -m app.services.hardware_diagnostic  # Opsional: jalankan cek spesifikasi luring
-uvicorn app.main:app --host 0.0.0.0 --port 3002 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 3004 --reload
 ```
 
-Backend API tersedia di `http://localhost:3002` dan `http://[IP-LOKAL-LAPTOP]:3002`.
+Backend API tersedia di `http://localhost:3004` dan `http://[IP-LOKAL-LAPTOP]:3004`.
 
 ### Setup Teacher's Copilot (Opsional — Ollama)
 
@@ -429,10 +453,10 @@ Pastikan URL Ollama di `BE/app/core/config.py` mengarah ke `http://localhost:114
 cd FE
 npm install
 npm run dev
-# Dev server berjalan di http://localhost:3001
+# Dev server berjalan di http://localhost:3003
 ```
 
-Dari smartphone yang terhubung ke Wi-Fi yang sama, buka `http://[IP-LOKAL-LAPTOP]:3001`.
+Dari smartphone yang terhubung ke Wi-Fi yang sama, buka `http://[IP-LOKAL-LAPTOP]:3003`.
 Klik **"Add to Home Screen"** di browser untuk menginstall sebagai PWA offline.
 
 ---
@@ -486,8 +510,8 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 
 ### Fully Local Offline Deployment (HTTP-to-HTTP)
 
-1. **Frontend Next.js** berjalan di laptop server guru pada **port 3001** (HTTP).
-2. **Backend FastAPI** berjalan di laptop server guru pada **port 3002** (HTTP).
+1. **Frontend Next.js** berjalan di laptop server guru pada **port 3003** (HTTP).
+2. **Backend FastAPI** berjalan di laptop server guru pada **port 3004** (HTTP).
 3. **Penyelesaian Mixed Content Blocking:** Dengan menjaga agar Frontend dan Backend berjalan dalam protokol HTTP murni yang sama di jaringan Wi-Fi kelas (`http://192.168.x.x`), peramban klien tidak akan memblokir request API. Hal ini menyelesaikan isu *Mixed Content Blocking* yang terjadi jika frontend dihost di HTTPS publik.
 4. **PWA Offline Installation:** PWA Next.js dapat dipasang langsung ke layar utama (*Add to Home Screen*) peramban siswa melalui alamat IP lokal server tanpa koneksi internet sama sekali.
 5. **Skrip Otomatisasi Startup (Background Services)**: Untuk mengonfigurasi auto-start server Next.js & FastAPI secara transparan tanpa membuka cmd manual, gunakan berkas [setup_services.bat](file:///d:/4. Thoriq_KULIAH/1.Lomba Thoriq/SEMESTER 4/05. Samsung/DyLeks/setup_services.bat) (butuh hak Administrator). Skrip ini mendaftarkan layanan ke Windows Task Scheduler dengan trigger `onlogon` dan hak akses tertinggi (`/rl HIGHEST`).
@@ -513,6 +537,7 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 | **Sprint 3.5** | Auth Guru (bcrypt + HMAC token), DyslexiaFuzzyMatcher engine, PWA Service Worker, Pilar 1 (Risk Assessment Engine SQLite), Pilar 2 (Offline PWA Sync Batch Queue) | **Selesai** |
 | **Sprint 3.6** | Peningkatan Stabilitas Edge Server (Auto-Start Script, SQLite WAL Mode, Local DNS Setup & Docs) | **Selesai** |
 | **Sprint 3.7** | Gamifikasi Cerdas Adaptive Dynamic Difficulty Scaling (DDS) & Telemetri Sensor Grip Real-Time | **Selesai** |
+| **Sprint 3.8** | Dashboard Guru Terintegrasi, Enkripsi Orton-Gillingham (AES-256), Konektivitas QR Luring Dinamis & Desktop Launcher (Electron App) | **Selesai** |
 | **Sprint 4** | IoT Smart Writing Grip (ESP32 + MPU6050 + MQTT) | Belum dimulai (tunggu hardware) |
 
 ---
@@ -532,6 +557,6 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 
 ---
 
-**Terakhir Diperbarui:** 10 Juni 2026  
-**Versi Dokumen:** 2.2 (Pilar 4 — Adaptive DDS & Telemetry)  
+**Terakhir Diperbarui:** 11 Juni 2026  
+**Versi Dokumen:** 2.3 (Fase 3.8 — Integrated Dashboard & Electron Desktop)  
 **Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)  

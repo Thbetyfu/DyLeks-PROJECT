@@ -115,9 +115,9 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Jangan intercept request ke backend API lokal (port 3002)
+  // Jangan intercept request ke backend API lokal (port 3004)
   // Biarkan network handle dan gagal secara natural jika offline
-  if (url.port === '3002' || url.pathname.startsWith('/api/v1/')) {
+  if (url.port === '3004' || url.pathname.startsWith('/api/v1/')) {
     return;
   }
 

@@ -5,7 +5,7 @@
 ; Alasan Desain ('Why'):
 ;   1. Memungkinkan guru menginstall seluruh ekosistem DyLeks (FastAPI, 
 ;      Next.js, SQLite, dan Electron) secara luring dengan sekali klik.
-2.   2. Mengotomatiskan registrasi Windows Defender Firewall (port 3001 & 3002)
+;   2. Mengotomatiskan registrasi Windows Defender Firewall (port 3003 & 3004)
 ;      agar browser HP siswa dapat terhubung ke laptop guru tanpa diblokir Windows.
 ; =========================================================================
 
@@ -49,8 +49,8 @@ Name: "{userdesktop}\DyLeks Local AI Platform"; Filename: "{app}\frontend\node_m
 
 [Run]
 ; Tambahkan pengecualian port firewall Windows secara otomatis agar bisa diakses oleh device dalam satu Wi-Fi kelas (Pilar 2)
-Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""DyLeks PWA Frontend"" dir=in action=allow protocol=TCP localport=3001"; Flags: runhidden; StatusMsg: "Mengatur aturan firewall untuk port klien (3001)..."
-Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""DyLeks Backend API"" dir=in action=allow protocol=TCP localport=3002"; Flags: runhidden; StatusMsg: "Mengatur aturan firewall untuk port backend AI (3002)..."
+Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""DyLeks PWA Frontend"" dir=in action=allow protocol=TCP localport=3003"; Flags: runhidden; StatusMsg: "Mengatur aturan firewall untuk port klien (3003)..."
+Filename: "netsh"; Parameters: "advfirewall firewall add rule name=""DyLeks Backend API"" dir=in action=allow protocol=TCP localport=3004"; Flags: runhidden; StatusMsg: "Mengatur aturan firewall untuk port backend AI (3004)..."
 
 [UninstallRun]
 ; Hapus aturan firewall saat aplikasi di-uninstall

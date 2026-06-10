@@ -109,7 +109,7 @@ export default function ScreeningPage() {
     let isAttemptOffline = false;
 
     try {
-      const response = await fetch('http://localhost:3002/api/v1/screening/upload', {
+      const response = await fetch('http://localhost:3004/api/v1/screening/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -218,7 +218,7 @@ export default function ScreeningPage() {
         }
 
         try {
-          const submitResponse = await fetch('http://localhost:3002/api/v1/screening/submit-session', {
+          const submitResponse = await fetch('http://localhost:3004/api/v1/screening/submit-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

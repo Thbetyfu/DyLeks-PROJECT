@@ -337,7 +337,7 @@ export default function Latihan() {
       const imageData = canvas.toDataURL('image/jpeg', 0.8);
 
       try {
-        const response = await fetch('http://localhost:3002/api/v1/screening/upload', {
+        const response = await fetch('http://localhost:3004/api/v1/screening/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

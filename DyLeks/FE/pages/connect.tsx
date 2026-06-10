@@ -47,8 +47,8 @@ export default function Connect() {
 
     setToken(tokenParam);
     
-    // Tentukan URL server (fallback ke port 3002 lokal jika kosong)
-    const activeServer = serverParam || 'http://localhost:3002';
+    // Tentukan URL server (fallback ke port 3004 lokal jika kosong)
+    const activeServer = serverParam || 'http://localhost:3004';
     setServerUrl(activeServer);
     localStorage.setItem('api_base_url', activeServer);
 

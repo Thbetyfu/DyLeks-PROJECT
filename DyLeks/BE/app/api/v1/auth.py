@@ -242,6 +242,58 @@ def delete_child_profile(
     db.commit()
 
 
+@router.post("/children/{child_id}/recommend-og")
+async def generate_og_recommendation(
+    child_id: str,
+    db: Session = Depends(get_db),
+    current_teacher: User = Depends(get_current_teacher)
+):
+    """
+    Menghasilkan rekomendasi intervensi Orton-Gillingham (OG) otomatis berbasis AI
+    berdasarkan profil risiko dan riwayat skrining anak.
+    """
+    child = db.query(ChildProfile).filter(
+        ChildProfile.id == child_id,
+        ChildProfile.teacher_id == current_teacher.id
+    ).first()
+
+    if not child:
+        raise HTTPException(status_code=404, detail="Profil siswa tidak ditemukan.")
+
+    from app.models.screening_session import ScreeningSession
+    latest_screening = db.query(ScreeningSession).filter(
+        ScreeningSession.child_id == child_id
+    ).order_by(ScreeningSession.created_at.desc()).first()
+
+    detected_errors = []
+    if latest_screening and latest_screening.feedback:
+        detected_errors.append(latest_screening.feedback)
+
+    # Buat context untuk copilot
+    context = {
+        "child_name": child.name,
+        "risk_level": child.risk_level,
+        "recommended_level": child.current_level,
+        "detected_errors": detected_errors
+    }
+
+    # Buat pesan instruksi otomatis ke AI untuk menghasilkan intervensi terarah
+    prompt_message = (
+        f"Berikan draf rencana intervensi pengajaran Orton-Gillingham luring yang spesifik untuk siswa saya bernama {child.name}. "
+        f"Siswa saat ini berusia {child.age or 'tidak diketahui'} tahun, duduk di {child.grade or 'SD'}, dengan status tingkat risiko disleksia '{child.risk_level}' "
+        f"dan berada pada level pembelajaran kurikulum adaptif '{child.current_level}/5'. "
+        f"Fokuslah pada aktivitas intervensi multisensori luring di kelas tanpa kuota internet."
+    )
+
+    from app.services.ollama_service import copilot_service
+    ai_reply = await copilot_service.get_reply(
+        message=prompt_message,
+        context=context
+    )
+
+    return {"recommendation": ai_reply}
+
+
 # ============================================================
 # QR CODE CONNECTION ENDPOINTS (Laptop-to-Mobile Setup)
 # ============================================================

@@ -57,6 +57,7 @@ export default function Dashboard() {
   // Edit Note States
   const [editingNotes, setEditingNotes] = useState('');
   const [notesSaving, setNotesSaving] = useState(false);
+  const [generatingRec, setGeneratingRec] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('teacher_token');
@@ -71,7 +72,7 @@ export default function Dashboard() {
     e.preventDefault();
     setAuthError(null);
     try {
-      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
       const res = await fetch(`${apiBase}/api/v1/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -96,7 +97,7 @@ export default function Dashboard() {
     e.preventDefault();
     setAuthError(null);
     try {
-      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
       const res = await fetch(`${apiBase}/api/v1/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -141,7 +142,7 @@ export default function Dashboard() {
   const fetchChildren = async (token: string) => {
     setLoadingStudents(true);
     try {
-      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
       const res = await fetch(`${apiBase}/api/v1/auth/children`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -162,7 +163,7 @@ export default function Dashboard() {
     if (!teacherToken) return;
 
     try {
-      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
       const res = await fetch(`${apiBase}/api/v1/auth/children`, {
         method: 'POST',
         headers: {
@@ -196,7 +197,7 @@ export default function Dashboard() {
     if (!teacherToken || !selectedChild) return;
     setNotesSaving(true);
     try {
-      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
       const res = await fetch(`${apiBase}/api/v1/auth/children/${selectedChild.id}`, {
         method: 'PATCH',
         headers: {
@@ -227,13 +228,46 @@ export default function Dashboard() {
     }
   };
 
+  // Generate Orton-Gillingham Recommendation dynamically via local AI
+  const handleGenerateOgRecommendation = async () => {
+    if (!selectedChild || !teacherToken) return;
+    setGeneratingRec(true);
+    try {
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
+      const res = await fetch(`${apiBase}/api/v1/auth/children/${selectedChild.id}/recommend-og`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${teacherToken}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error('Gagal memanggil modul rekomendasi AI luring.');
+      }
+
+      const data = await res.json();
+      const newRec = data.recommendation;
+      
+      // Overwrite or append with a clean double newline separator
+      const mergedNotes = editingNotes 
+        ? `${editingNotes}\n\n[Rencana Intervensi Orton-Gillingham AI]\n${newRec}`
+        : `[Rencana Intervensi Orton-Gillingham AI]\n${newRec}`;
+      
+      setEditingNotes(mergedNotes);
+    } catch (err: any) {
+      alert(err.message || 'Gagal membuat rekomendasi intervensi. Pastikan uvicorn dan Ollama Anda aktif.');
+    } finally {
+      setGeneratingRec(false);
+    }
+  };
+
   // Hapus Siswa
   const handleDeleteStudent = async (id: string) => {
     if (!teacherToken) return;
     if (!confirm('Apakah Anda yakin ingin menghapus profil siswa ini beserta seluruh riwayat skrining & latihan? Tindakan ini tidak bisa dibatalkan.')) return;
 
     try {
-      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
       const res = await fetch(`${apiBase}/api/v1/auth/children/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${teacherToken}` },
@@ -257,7 +291,7 @@ export default function Dashboard() {
     setConnectedStudentName(null);
     setShowQrModal(true);
     try {
-      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+      const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
       const res = await fetch(`${apiBase}/api/v1/auth/qr/generate`, {
         method: 'POST',
         headers: {
@@ -285,7 +319,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!qrToken || !teacherToken || qrStatus !== 'pending') return;
 
-    const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3002';
+    const apiBase = localStorage.getItem('api_base_url') || 'http://localhost:3004';
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`${apiBase}/api/v1/auth/qr/status/${qrToken}`, {
@@ -343,7 +377,8 @@ export default function Dashboard() {
   const getQRUrl = () => {
     if (typeof window === 'undefined') return '';
     const host = window.location.hostname;
-    return `http://${host}:3001/connect?token=${qrToken}&server=http://${host}:3002`;
+    const port = window.location.port || '3003';
+    return `http://${host}:${port}/connect?token=${qrToken}&server=http://${host}:3004`;
   };
 
   // Menghitung Metrik Overview Kelas
@@ -382,8 +417,40 @@ export default function Dashboard() {
               display: 'flex', 
               flexDirection: 'column', 
               gap: '20px', 
-              textAlign: 'center' 
+              textAlign: 'center',
+              position: 'relative'
             }}>
+              {/* Tombol Back ke Beranda */}
+              <button 
+                onClick={() => router.push('/')} 
+                style={{ 
+                  position: 'absolute', 
+                  top: '24px', 
+                  left: '24px', 
+                  background: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)', 
+                  border: 'none', 
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  color: 'inherit', 
+                  cursor: 'pointer', 
+                  fontSize: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold',
+                  transition: 'background 0.2s ease'
+                }}
+                title="Kembali ke Beranda"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = theme === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+                }}
+              >
+                ←
+              </button>
               <div className={styles.mascotContainer} style={{ width: '80px', height: '80px', margin: '0 auto 10px' }}>
                 {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
               </div>
@@ -679,7 +746,36 @@ export default function Dashboard() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)', paddingTop: '16px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 'bold', color: theme === 'dark' ? '#feb2b2' : '#c53030' }}>Catatan Intervensi Pedagogis Guru (Orton-Gillingham):</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                      <label style={{ fontSize: '13px', fontWeight: 'bold', color: theme === 'dark' ? '#feb2b2' : '#c53030' }}>Catatan Intervensi Pedagogis Guru (Orton-Gillingham):</label>
+                      <button
+                        onClick={handleGenerateOgRecommendation}
+                        disabled={generatingRec}
+                        style={{
+                          padding: '6px 12px',
+                          background: 'rgba(91, 108, 255, 0.12)',
+                          border: '1px solid var(--primary)',
+                          borderRadius: '10px',
+                          color: 'var(--primary)',
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          transition: 'all 0.28s ease',
+                          outline: 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(91, 108, 255, 0.22)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(91, 108, 255, 0.12)';
+                        }}
+                      >
+                        ✨ {generatingRec ? 'Menganalisis...' : 'Rekomendasikan Rencana Belajar (OG)'}
+                      </button>
+                    </div>
                     <textarea
                       value={editingNotes}
                       onChange={(e) => setEditingNotes(e.target.value)}

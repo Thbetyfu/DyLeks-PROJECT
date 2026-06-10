@@ -75,12 +75,12 @@ Untuk penggunaan dasar (offline/lokal), nilai default sudah cukup.
 ### 2e. Jalankan Backend Server
 
 ```powershell
-uvicorn app.main:app --host 0.0.0.0 --port 3002 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 3004 --reload
 ```
 
 Backend berhasil berjalan jika muncul pesan:
 ```
-INFO:     Uvicorn running on http://0.0.0.0:3002 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://0.0.0.0:3004 (Press CTRL+C to quit)
 ```
 
 > Terminal ini JANGAN ditutup. Biarkan tetap berjalan.
@@ -116,7 +116,7 @@ npm run dev
 
 Frontend berhasil berjalan jika muncul pesan:
 ```
-- ready started server on 0.0.0.0:3001, url: http://localhost:3001
+- ready started server on 0.0.0.0:3003, url: http://localhost:3003
 ```
 
 ---
@@ -126,7 +126,7 @@ Frontend berhasil berjalan jika muncul pesan:
 Buka browser (Chrome/Edge) lalu akses:
 
 ```
-http://localhost:3001
+http://localhost:3003
 ```
 
 Aplikasi DyLeks sudah siap digunakan.
@@ -141,7 +141,7 @@ Jika sudah pernah setup sebelumnya, cukup jalankan ini setiap kali mau buka proj
 ```powershell
 cd DyLeks\BE
 venv\Scripts\activate
-uvicorn app.main:app --host 0.0.0.0 --port 3002 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 3004 --reload
 ```
 
 **Terminal B — Frontend:**
@@ -150,7 +150,7 @@ cd DyLeks\FE
 npm run dev
 ```
 
-**Lalu buka:** `http://localhost:3001`
+**Lalu buka:** `http://localhost:3003`
 
 ---
 
@@ -158,9 +158,9 @@ npm run dev
 
 | Service | Port | URL |
 |---|---|---|
-| Backend API (FastAPI) | 3002 | http://localhost:3002 |
-| Frontend (Next.js) | 3001 | http://localhost:3001 |
-| API Docs (Swagger) | 3002 | http://localhost:3002/docs |
+| Backend API (FastAPI) | 3004 | http://localhost:3004 |
+| Frontend (Next.js) | 3003 | http://localhost:3003 |
+| API Docs (Swagger) | 3004 | http://localhost:3004/docs |
 
 ---
 
@@ -203,11 +203,11 @@ Guru tidak perlu mengikuti langkah-langkah di atas. Cukup:
 - Pastikan Node.js sudah terinstall dari https://nodejs.org.
 - Restart terminal setelah instalasi.
 
-### Port 3001 atau 3002 sudah dipakai
+### Port 3003 atau 3004 sudah dipakai
 Matikan proses yang memakai port tersebut:
 ```powershell
-# Cari proses di port 3001
-netstat -ano | findstr :3001
+# Cari proses di port 3003
+netstat -ano | findstr :3003
 
 # Matikan proses dengan PID yang ditemukan (contoh PID = 12345)
 taskkill /PID 12345 /F
