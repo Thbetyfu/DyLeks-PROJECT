@@ -45,13 +45,18 @@
 
 .backBtn {
   display: flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--surface); border: 1px solid var(--glass-border);
+  width: 44px; height: 44px; border-radius: 14px;  /* Rounded square */
+  background: var(--surface); border: 1.5px solid var(--glass-border);
   color: var(--text-main); cursor: pointer;
   transition: var(--transition-smooth);
   flex-shrink: 0;
 }
-.backBtn:hover { background: var(--primary); color: white; transform: scale(1.05); }
+.backBtn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateX(-2px);
+}
 
 .headerInfo { display: flex; align-items: center; gap: 10px; flex: 1; }
 
@@ -141,16 +146,18 @@
   border-bottom-left-radius: 4px;
 }
 .bubbleUser {
-  background: linear-gradient(135deg, var(--primary), hsl(250, 80%, 60%));
+  background: var(--primary);     /* Biru tua tenang, bukan gradient neon */
   color: white;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 16px hsla(230, 100%, 65%, 0.28);
+  box-shadow: 0 4px 16px rgba(45, 111, 168, 0.24);
 }
 
+/* Teks chat: line-height 1.75 standar BDA untuk disleksia */
 .bubbleText {
-  font-size: 14px; line-height: 1.6; margin: 0;
+  font-size: 15px; line-height: 1.75; margin: 0;
   color: var(--text-main); white-space: pre-wrap;
   word-break: break-word;
+  letter-spacing: 0.02em;
 }
 .bubbleUser .bubbleText { color: white; }
 
@@ -180,18 +187,18 @@
 .quickLabel { font-size: 12px; color: var(--text-muted); margin: 0 0 10px; font-weight: 600; }
 .quickGrid { display: flex; flex-direction: column; gap: 8px; }
 .quickChip {
-  text-align: left; padding: 12px 16px; border-radius: 14px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  color: var(--text-main); font-size: 13px; cursor: pointer;
-  transition: var(--transition-smooth); line-height: 1.4;
-  backdrop-filter: blur(8px);
+  text-align: left; padding: 14px 16px; border-radius: 14px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--glass-border);
+  color: var(--text-main); font-size: 14px; cursor: pointer;
+  transition: var(--transition-smooth); line-height: 1.6;
+  font-weight: 400;
 }
 .quickChip:hover {
-  background: var(--primary); color: white;
-  border-color: transparent;
-  transform: translateX(4px);
-  box-shadow: 0 4px 16px hsla(230, 100%, 65%, 0.25);
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateX(3px);
 }
 
 /* Input Area */
@@ -222,15 +229,20 @@
 }
 .inputBox::placeholder { color: var(--text-muted); }
 
+/* Tombol kirim: warna primer tenang, bukan neon */
 .sendBtn {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), hsl(250, 80%, 60%));
+  width: 44px; height: 44px; border-radius: 14px;
+  background: var(--primary);
   color: white; border: none; cursor: pointer; display: flex;
   align-items: center; justify-content: center;
   transition: var(--transition-smooth); flex-shrink: 0;
-  box-shadow: 0 3px 12px hsla(230, 100%, 65%, 0.30);
+  box-shadow: 0 3px 12px rgba(45, 111, 168, 0.28);
 }
-.sendBtn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 5px 18px hsla(230, 100%, 65%, 0.42); }
+.sendBtn:hover:not(:disabled) {
+  transform: scale(1.06);
+  background: var(--primary-hover);
+  box-shadow: 0 5px 18px rgba(45, 111, 168, 0.38);
+}
 .sendBtnDisabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
 .inputHint {

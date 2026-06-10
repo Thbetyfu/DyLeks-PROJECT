@@ -1,7 +1,7 @@
 .container {
   min-height: 100vh;
   padding: 40px 24px 56px;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: 'Lexend', 'Inter', system-ui, sans-serif;
   max-width: 1120px;
   margin: 0 auto;
   position: relative;
@@ -22,11 +22,13 @@
   box-shadow: var(--glass-shadow);
 }
 
+/* Tombol back: 52x52px standar touch target anak */
 .backButton {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--glass-border);
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 16px;           /* Rounded square lebih mudah diklik */
+  border: 1.5px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,17 +40,19 @@
 }
 
 .backButton:hover {
-  background: var(--accent);
-  color: white;
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
   transform: translateX(-2px);
 }
 
 .headerTitle {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--text-main);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-heading);
   flex: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;        /* Positif untuk disleksia */
+  line-height: 1.3;
 }
 
 .statSection {
@@ -82,11 +86,12 @@
 }
 
 .sectionTitle {
-  font-size: 1.15rem;
-  font-weight: 800;
-  margin-bottom: 24px;
-  color: var(--text-main);
-  letter-spacing: -0.02em;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-heading);
+  letter-spacing: 0.01em;        /* Positif untuk disleksia */
+  line-height: 1.4;
 }
 
 .detailSection {
@@ -149,10 +154,10 @@
 }
 
 .indicationText {
-  font-size: 0.9rem;
-  line-height: 1.7;
+  font-size: 0.95rem;
+  line-height: 1.75;             /* Standar BDA untuk disleksia */
   color: var(--text-main);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .recommendationList {
@@ -163,55 +168,64 @@
 }
 
 .recommendationCard {
-  border: 1px solid var(--glass-border);
+  border: 1.5px solid var(--glass-border);
   border-radius: 20px;
   padding: 20px 24px;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  font-weight: 400;
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: 1.75;             /* Standar disleksia */
   background: var(--surface);
   box-shadow: var(--glass-shadow);
 }
 
+/* Kotak disclaimer: menggunakan token warning yang hangat */
 .disclaimerBox {
-  background: rgba(255, 138, 91, 0.1);
-  border: 1px solid rgba(255, 138, 91, 0.28);
+  background: var(--warning-light);
+  border: 1.5px solid rgba(201, 123, 0, 0.25);
   border-radius: 20px;
-  padding: 24px;
+  padding: 20px;
   margin-bottom: 40px;
 }
 
 .disclaimerText {
-  font-size: 0.8rem;
-  line-height: 1.6;
-  color: var(--text-main);
-  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1.75;             /* Standar disleksia */
+  color: var(--text-heading);
+  font-weight: 400;
 }
 
+/* Tombol utama: 56px, menggunakan token primary yang sudah di-update */
 .closeButton {
   width: 100%;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+  min-height: 56px;
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 18px;
-  padding: 18px;
-  font-size: 1.2rem;
-  font-weight: 800;
+  padding: 0 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  box-shadow: 0 12px 28px rgba(91,108,255,0.22);
+  box-shadow: 0 6px 20px rgba(45, 111, 168, 0.28);
   margin-bottom: 40px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .closeButton:active {
-  transform: translateY(4px);
-  box-shadow: 0 4px 12px rgba(0,0,0, 0.2), 0 0px 0 rgba(0,0,0,0.5);
+  transform: translateY(2px);
+  box-shadow: 0 2px 8px rgba(45, 111, 168, 0.20);
 }
 
 .closeButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(0,0,0, 0.4), 0 4px 0 rgba(0,0,0,0.5);
+  background: var(--primary-hover);
+  box-shadow: 0 10px 28px rgba(45, 111, 168, 0.34);
 }
 
 /* RESPONSIVE GRID FOR DESKTOP */
