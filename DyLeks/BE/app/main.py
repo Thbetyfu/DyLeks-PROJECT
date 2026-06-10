@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Response
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
 from app.api.v1 import screening, chat, learning, auth, sync
@@ -70,3 +71,39 @@ def read_root():
         "version": "1.2.0",
         "message": "DyslexiAI API is running. Auth system aktif.",
     }
+
+# =====================================================================
+# CAPTIVE PORTAL & CONNECTIVITY CHECK MOCK ROUTING
+# Membantu perangkat Android, iOS, dan Windows tetap terhubung ke
+# jaringan Wi-Fi lokal kelas luring meskipun tidak ada akses internet.
+# =====================================================================
+
+@app.get("/generate_204", status_code=204)
+@app.head("/generate_204", status_code=204)
+def generate_204_endpoint():
+    """Mock connectivity check untuk Android OS"""
+    return Response(status_code=204)
+
+@app.get("/gen_204", status_code=204)
+@app.head("/gen_204", status_code=204)
+def gen_204_endpoint():
+    """Mock connectivity check alternatif untuk Android OS"""
+    return Response(status_code=204)
+
+@app.get("/hotspot-detect.html")
+@app.get("/library/test/success.html")
+def apple_captive_portal_endpoint():
+    """Mock connectivity check untuk iOS / macOS (Apple Captive Portal)"""
+    html_content = "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>"
+    return HTMLResponse(content=html_content, status_code=200)
+
+@app.get("/connecttest.txt")
+def windows_ncsi_endpoint():
+    """Mock connectivity check untuk Windows OS (NCSI)"""
+    return PlainTextResponse(content="Microsoft Connect Test", status_code=200)
+
+@app.get("/ncsi.txt")
+def windows_ncsi_txt_endpoint():
+    """Mock connectivity check alternatif untuk Windows OS (NCSI)"""
+    return PlainTextResponse(content="Microsoft NCSI", status_code=200)
+
