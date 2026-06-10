@@ -370,7 +370,20 @@ export default function Dashboard() {
         {!teacherToken ? (
           // ==================== LAYAR AUTH GURU (LOGIN / REGISTER) ====================
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-            <div style={{ background: theme === 'dark' ? '#181b2a' : '#ffffff', color: theme === 'dark' ? '#ffffff' : '#1a202c', padding: '32px', borderRadius: '24px', width: '100%', maxWidth: '440px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)', display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'center' }}>
+            <div style={{ 
+              background: theme === 'dark' ? '#181b2a' : '#ffffff', 
+              color: theme === 'dark' ? '#ffffff' : '#1a202c', 
+              padding: '32px', 
+              borderRadius: '24px', 
+              width: '100%', 
+              maxWidth: '440px', 
+              border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)', 
+              boxShadow: theme === 'dark' ? '0 20px 25px -5px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.08)', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '20px', 
+              textAlign: 'center' 
+            }}>
               <div className={styles.mascotContainer} style={{ width: '80px', height: '80px', margin: '0 auto 10px' }}>
                 {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
               </div>
@@ -407,34 +420,109 @@ export default function Dashboard() {
           // ==================== UTAMA: DASHBOARD GURU ====================
           <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', width: '100%' }}>
             
+            {/* Top Navigation Bar */}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'flex-start', 
+              alignItems: 'center', 
+              gap: '12px',
+              width: '100%',
+              marginBottom: '-10px'
+            }}>
+              <button 
+                onClick={() => router.push('/')} 
+                style={{ 
+                  padding: '10px 18px', 
+                  background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff', 
+                  border: theme === 'dark' ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0, 0, 0, 0.12)', 
+                  borderRadius: '12px', 
+                  color: 'inherit', 
+                  fontWeight: '600', 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: theme === 'dark' ? 'none' : '0 4px 12px rgba(0,0,0,0.02)'
+                }}
+              >
+                <span>←</span> Beranda Utama
+              </button>
+              <button 
+                onClick={handleLogout} 
+                style={{ 
+                  padding: '10px 20px', 
+                  background: 'linear-gradient(135deg, #e53e3e 0%, #9b2c2c 100%)', 
+                  border: 'none', 
+                  borderRadius: '12px', 
+                  color: 'white', 
+                  fontWeight: '600', 
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(229, 62, 62, 0.2)'
+                }}
+              >
+                Logout
+              </button>
+            </div>
+
             {/* Header Dashboard */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '20px 30px', borderRadius: '20px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-              <div>
-                <h1 style={{ fontSize: '26px', fontWeight: 'bold', color: 'var(--text-primary, #ffffff)', margin: 0 }}>Dashboard Kelas Guru</h1>
-                <p style={{ fontSize: '14px', color: 'var(--text-secondary, #a0a0a0)', margin: '4px 0 0 0' }}>Pantau kemantapan kognitif & tremor motorik anak secara luring.</p>
-              </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <button onClick={() => router.push('/')} style={{ padding: '10px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', color: 'inherit', fontWeight: '600', cursor: 'pointer' }}>Beranda Utama</button>
-                <button onClick={handleLogout} style={{ padding: '10px 16px', background: 'linear-gradient(135deg, #e53e3e 0%, #9b2c2c 100%)', border: 'none', borderRadius: '12px', color: 'white', fontWeight: '600', cursor: 'pointer' }}>Logout</button>
-              </div>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255, 255, 255, 0.85)', 
+              padding: '24px 30px', 
+              borderRadius: '20px', 
+              backdropFilter: 'blur(10px)', 
+              border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
+              boxShadow: theme === 'dark' ? 'none' : '0 10px 30px rgba(0,0,0,0.04)'
+            }}>
+              <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: theme === 'dark' ? '#ffffff' : '#1a202c', margin: 0 }}>Dashboard Kelas Guru</h1>
+              <p style={{ fontSize: '14px', color: theme === 'dark' ? '#a0a0a0' : '#4a5568', margin: '6px 0 0 0' }}>Pantau kemantapan kognitif & tremor motorik anak secara luring.</p>
             </div>
 
             {/* Overview Stats Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.04)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '14px', color: 'gray', margin: '0 0 8px 0' }}>Total Siswa Terdaftar</h3>
+              <div style={{ 
+                background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff', 
+                padding: '20px', 
+                borderRadius: '20px', 
+                border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0, 0, 0, 0.08)', 
+                textAlign: 'center',
+                boxShadow: theme === 'dark' ? 'none' : '0 8px 20px rgba(0,0,0,0.02)'
+              }}>
+                <h3 style={{ fontSize: '14px', color: theme === 'dark' ? 'gray' : '#4a5568', margin: '0 0 8px 0' }}>Total Siswa Terdaftar</h3>
                 <p style={{ fontSize: '36px', fontWeight: 'bold', margin: 0, color: '#4299e1' }}>{totalStudents}</p>
               </div>
-              <div style={{ background: 'rgba(229, 62, 62, 0.08)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(229, 62, 62, 0.2)', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '14px', color: '#feb2b2', margin: '0 0 8px 0' }}>Risiko Disleksia TINGGI</h3>
+              <div style={{ 
+                background: theme === 'dark' ? 'rgba(229, 62, 62, 0.08)' : '#fff5f5', 
+                padding: '20px', 
+                borderRadius: '20px', 
+                border: theme === 'dark' ? '1px solid rgba(229, 62, 62, 0.2)' : '1px solid rgba(229, 62, 62, 0.25)', 
+                textAlign: 'center',
+                boxShadow: theme === 'dark' ? 'none' : '0 8px 20px rgba(229, 62, 62, 0.02)'
+              }}>
+                <h3 style={{ fontSize: '14px', color: theme === 'dark' ? '#feb2b2' : '#c53030', margin: '0 0 8px 0' }}>Risiko Disleksia TINGGI</h3>
                 <p style={{ fontSize: '36px', fontWeight: 'bold', margin: 0, color: '#e53e3e' }}>{highRiskCount}</p>
               </div>
-              <div style={{ background: 'rgba(221, 107, 32, 0.08)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(221, 107, 32, 0.2)', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '14px', color: '#fbd38d', margin: '0 0 8px 0' }}>Risiko Disleksia SEDANG</h3>
+              <div style={{ 
+                background: theme === 'dark' ? 'rgba(221, 107, 32, 0.08)' : '#fffaf0', 
+                padding: '20px', 
+                borderRadius: '20px', 
+                border: theme === 'dark' ? '1px solid rgba(221, 107, 32, 0.2)' : '1px solid rgba(221, 107, 32, 0.25)', 
+                textAlign: 'center',
+                boxShadow: theme === 'dark' ? 'none' : '0 8px 20px rgba(221, 107, 32, 0.02)'
+              }}>
+                <h3 style={{ fontSize: '14px', color: theme === 'dark' ? '#fbd38d' : '#c05621', margin: '0 0 8px 0' }}>Risiko Disleksia SEDANG</h3>
                 <p style={{ fontSize: '36px', fontWeight: 'bold', margin: 0, color: '#dd6b20' }}>{mediumRiskCount}</p>
               </div>
-              <div style={{ background: 'rgba(72, 187, 120, 0.08)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(72, 187, 120, 0.2)', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '14px', color: '#c6f6d5', margin: '0 0 8px 0' }}>Risiko Disleksia RENDAH</h3>
+              <div style={{ 
+                background: theme === 'dark' ? 'rgba(72, 187, 120, 0.08)' : '#f0fff4', 
+                padding: '20px', 
+                borderRadius: '20px', 
+                border: theme === 'dark' ? '1px solid rgba(72, 187, 120, 0.2)' : '1px solid rgba(72, 187, 120, 0.25)', 
+                textAlign: 'center',
+                boxShadow: theme === 'dark' ? 'none' : '0 8px 20px rgba(72, 187, 120, 0.02)'
+              }}>
+                <h3 style={{ fontSize: '14px', color: theme === 'dark' ? '#c6f6d5' : '#2f855a', margin: '0 0 8px 0' }}>Risiko Disleksia RENDAH</h3>
                 <p style={{ fontSize: '36px', fontWeight: 'bold', margin: 0, color: '#48bb78' }}>{lowRiskCount}</p>
               </div>
             </div>
@@ -443,9 +531,16 @@ export default function Dashboard() {
             <div style={{ display: 'grid', gridTemplateColumns: selectedChild ? '2fr 1.3fr' : '1fr', gap: '30px', transition: 'all 0.3s ease' }}>
               
               {/* Box Daftar Siswa */}
-              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '30px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)' }}>
+              <div style={{ 
+                background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff', 
+                padding: '30px', 
+                borderRadius: '24px', 
+                border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)', 
+                backdropFilter: 'blur(16px)',
+                boxShadow: theme === 'dark' ? 'none' : '0 10px 30px rgba(0,0,0,0.03)'
+              }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>Profil & Status Siswa</h2>
+                  <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0, color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>Profil & Status Siswa</h2>
                   <button onClick={() => setShowAddModal(true)} style={{ padding: '10px 18px', background: '#58CC02', color: 'white', border: 'none', borderRadius: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ fontSize: '18px', fontWeight: 'bold' }}>+</span> Tambah Profil Siswa
                   </button>
@@ -456,14 +551,14 @@ export default function Dashboard() {
                 ) : children.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '60px 20px', color: 'gray' }}>
                     <div style={{ fontSize: '48px', marginBottom: '12px' }}>📂</div>
-                    <p style={{ margin: 0 }}>Belum ada profil siswa di bawah pengelolaan Anda.</p>
-                    <p style={{ fontSize: '12px', margin: '4px 0 0 0' }}>Klik tombol "Tambah Profil Siswa" di kanan atas untuk memulai.</p>
+                    <p style={{ margin: 0, color: theme === 'dark' ? 'gray' : '#4a5568' }}>Belum ada profil siswa di bawah pengelolaan Anda.</p>
+                    <p style={{ fontSize: '12px', margin: '4px 0 0 0', color: 'gray' }}>Klik tombol "Tambah Profil Siswa" di kanan atas untuk memulai.</p>
                   </div>
                 ) : (
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
-                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'gray', fontSize: '13px' }}>
+                        <tr style={{ borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0, 0, 0, 0.08)', color: theme === 'dark' ? 'gray' : '#4a5568', fontSize: '13px' }}>
                           <th style={{ padding: '12px' }}>Nama</th>
                           <th style={{ padding: '12px' }}>Kelas</th>
                           <th style={{ padding: '12px' }}>Level Saat Ini</th>
@@ -477,21 +572,21 @@ export default function Dashboard() {
                           <tr
                             key={child.id}
                             style={{
-                              borderBottom: '1px solid rgba(255,255,255,0.05)',
+                              borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0, 0, 0, 0.06)',
                               cursor: 'pointer',
-                              background: selectedChild?.id === child.id ? 'rgba(255,255,255,0.04)' : 'transparent',
+                              background: selectedChild?.id === child.id ? (theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)') : 'transparent',
                             }}
                             onClick={() => {
                               setSelectedChild(child);
                               setEditingNotes(child.teacher_notes || '');
                             }}
                           >
-                            <td style={{ padding: '16px 12px', fontWeight: 'bold' }}>{child.name}</td>
-                            <td style={{ padding: '16px 12px' }}>{child.grade || '-'}</td>
+                            <td style={{ padding: '16px 12px', fontWeight: 'bold', color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>{child.name}</td>
+                            <td style={{ padding: '16px 12px', color: theme === 'dark' ? '#ffffff' : '#4a5568' }}>{child.grade || '-'}</td>
                             <td style={{ padding: '16px 12px' }}>
-                              <span style={{ background: 'rgba(255,255,255,0.08)', padding: '4px 10px', borderRadius: '8px', fontSize: '12px' }}>Level {child.current_level}</span>
+                              <span style={{ background: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>Level {child.current_level}</span>
                             </td>
-                            <td style={{ padding: '16px 12px' }}>{child.risk_score.toFixed(1)}%</td>
+                            <td style={{ padding: '16px 12px', color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>{child.risk_score.toFixed(1)}%</td>
                             <td style={{ padding: '16px 12px' }}>
                               <span
                                 style={{
@@ -507,10 +602,10 @@ export default function Dashboard() {
                                       : 'rgba(72,187,120,0.15)',
                                   color:
                                     child.risk_level === 'Tinggi'
-                                      ? '#fc8181'
+                                      ? (theme === 'dark' ? '#fc8181' : '#c53030')
                                       : child.risk_level === 'Sedang'
-                                      ? '#fbd38d'
-                                      : '#68d391',
+                                      ? (theme === 'dark' ? '#fbd38d' : '#c05621')
+                                      : (theme === 'dark' ? '#68d391' : '#2f855a'),
                                 }}
                               >
                                 {child.risk_level}
@@ -542,29 +637,39 @@ export default function Dashboard() {
 
               {/* Panel Detail & Catatan Guru (Muncul jika ada siswa yang diklik) */}
               {selectedChild && (
-                <div style={{ background: 'rgba(255,255,255,0.04)', padding: '30px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative' }}>
-                  <button onClick={() => setSelectedChild(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', fontSize: '18px', color: 'gray', cursor: 'pointer' }}>✕</button>
+                <div style={{ 
+                  background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff', 
+                  padding: '30px', 
+                  borderRadius: '24px', 
+                  border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '20px', 
+                  position: 'relative',
+                  boxShadow: theme === 'dark' ? 'none' : '0 10px 30px rgba(0,0,0,0.03)'
+                }}>
+                  <button onClick={() => setSelectedChild(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', fontSize: '18px', color: theme === 'dark' ? 'gray' : '#4a5568', cursor: 'pointer' }}>✕</button>
 
-                  <h2 style={{ fontSize: '20px', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '10px' }}>Detail Siswa</h2>
+                  <h2 style={{ fontSize: '20px', fontWeight: 'bold', borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)', paddingBottom: '10px', color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>Detail Siswa</h2>
                   
                   <div>
-                    <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: 'gray' }}>Nama Lengkap</p>
-                    <p style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>{selectedChild.name}</p>
+                    <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: theme === 'dark' ? 'gray' : '#718096' }}>Nama Lengkap</p>
+                    <p style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>{selectedChild.name}</p>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div>
-                      <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: 'gray' }}>Usia</p>
-                      <p style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>{selectedChild.age || '-'} Tahun</p>
+                      <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: theme === 'dark' ? 'gray' : '#718096' }}>Usia</p>
+                      <p style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>{selectedChild.age || '-'} Tahun</p>
                     </div>
                     <div>
-                      <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: 'gray' }}>Jenis Kelamin</p>
-                      <p style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>{selectedChild.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                      <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: theme === 'dark' ? 'gray' : '#718096' }}>Jenis Kelamin</p>
+                      <p style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: theme === 'dark' ? '#ffffff' : '#1a202c' }}>{selectedChild.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
                     </div>
                   </div>
 
                   <div>
-                    <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: 'gray' }}>Skor Risiko Disleksia Akhir</p>
+                    <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: theme === 'dark' ? 'gray' : '#718096' }}>Skor Risiko Disleksia Akhir</p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
                       <span style={{ fontSize: '22px', fontWeight: 'bold', color: selectedChild.risk_level === 'Tinggi' ? '#fc8181' : selectedChild.risk_level === 'Sedang' ? '#fbd38d' : '#68d391' }}>
                         {selectedChild.risk_score.toFixed(1)}%
@@ -573,14 +678,14 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '16px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#feb2b2' }}>Catatan Intervensi Pedagogis Guru (Orton-Gillingham):</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)', paddingTop: '16px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: 'bold', color: theme === 'dark' ? '#feb2b2' : '#c53030' }}>Catatan Intervensi Pedagogis Guru (Orton-Gillingham):</label>
                     <textarea
                       value={editingNotes}
                       onChange={(e) => setEditingNotes(e.target.value)}
                       placeholder="Masukkan catatan pengajaran khusus, misalnya: 'Siswa sering membalik huruf b dan d. Rekomendasi intervensi taktil menulis di atas pasir kelas luring.'"
                       rows={5}
-                      style={{ padding: '12px', borderRadius: '12px', border: '1px solid rgba(128,128,128,0.4)', background: 'rgba(0,0,0,0.2)', color: 'inherit', fontSize: '13px', lineHeight: '1.5', resize: 'vertical' }}
+                      style={{ padding: '12px', borderRadius: '12px', border: theme === 'dark' ? '1px solid rgba(128,128,128,0.4)' : '1px solid #cbd5e0', background: theme === 'dark' ? 'rgba(0,0,0,0.2)' : '#f7fafc', color: 'inherit', fontSize: '13px', lineHeight: '1.5', resize: 'vertical' }}
                     />
                     <button
                       onClick={handleSaveNotes}
