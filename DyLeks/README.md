@@ -136,6 +136,17 @@ Anak disleksia memiliki tingkat frustrasi kognitif yang tinggi jika diberi tanta
 * Menghilangkan kerumitan menjalankan perintah terminal bagi guru di pelosok.
 * Manajemen penutupan proses latar belakang otomatis saat aplikasi desktop ditutup guna menghindari akumulasi process zombie.
 
+### L. Kinesthetic Tracer / Papan Tulis Digital (`FE/pages/tracer.tsx`)
+
+* Papan tulis Canvas interaktif untuk melatih motorik halus dan menghindari kesalahan arah tulis huruf mirip (`b`, `d`, `p`, `q`).
+* Menggunakan algoritma checkpoint tarikan garis real-time untuk memvalidasi urutan alur penulisan yang benar.
+* Pemicu getaran fisik (`window.navigator.vibrate`) dan petunjuk arah visual merah/panah cyan jika terdeteksi kesalahan alur tulisan tangan.
+
+### M. Speech AI & Evaluasi Fonologis (`FE/pages/speech.tsx` & `BE/app/api/v1/speech.py`)
+
+* Integrasi **Web Speech API** pada PWA murid untuk merubah pelafalan suara menjadi teks secara luring tanpa membebani laptop server.
+* API evaluasi berbasis **RapidFuzz** & **Levenshtein distance** di backend untuk mendeteksi penggantian fonem mirip (*substitution*), omisi, insersi, dan transposisi secara offline.
+
 ---
 
 ## 5. Arsitektur Backend yang Telah Diimplementasikan
