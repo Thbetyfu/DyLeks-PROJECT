@@ -1,0 +1,9 @@
+[submodule "DyLeks/Siswa"]
+	path = DyLeks/Siswa
+	url = https://github.com/Thbetyfu/DYLEKS-SISWA.git
+[submodule "DyLeks/Guru"]
+	path = DyLeks/Guru
+	url = https://github.com/Thbetyfu/DYLEKS-GURU.git
+[submodule "DyLeks/Psikolog"]
+	path = DyLeks/Psikolog
+	url = https://github.com/Thbetyfu/DYLEKS-PSIKOLOG.git
