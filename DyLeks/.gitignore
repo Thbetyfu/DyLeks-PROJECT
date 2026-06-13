@@ -73,3 +73,9 @@ ML_Pipeline/.ipynb_checkpoints/
 
 # Infrastructure
 .terraform/
+
+# SQLite temp files
+*.db-shm
+*.db-wal
+*.db-journal
+
